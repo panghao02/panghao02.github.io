@@ -127,6 +127,8 @@
   .tags a:hover{color:var(--red);border-color:var(--red);}
   .read-more{font-size:14px;color:var(--blue);font-weight:600;}
 
+  .empty{text-align:center;color:var(--ink-3);font-size:15px;padding:40px 0;}
+
   /* ===== 分页 ===== */
   .pagination{
     display:flex;justify-content:center;gap:14px;margin:32px 0 8px;
@@ -202,6 +204,10 @@
     <input type="text" id="search-input" placeholder="搜索文章标题或内容…" autocomplete="off">
   </div>
   <ul id="results-container"></ul>
+
+  {% if paginator.posts.size == 0 %}
+  <p class="empty">还没有发布文章，敬请期待。</p>
+  {% endif %}
 
   <ul class="post-list">
     {% for post in paginator.posts %}
