@@ -1,0 +1,1981 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>矩阵论互动学习站</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231D4E89'/%3E%3Ctext x='16' y='23' font-size='18' text-anchor='middle' fill='%23F6F1E3' font-family='Georgia,serif'%3Eλ%3C/text%3E%3C/svg%3E">
+<style>
+/* ============ 设计变量：演算纸 + 墨蓝 + 批注红 ============ */
+:root{
+  --paper:#F6F1E3; --paper2:#ECE4CF; --card:#FFFDF6;
+  --ink:#22304B; --ink2:#46536E; --muted:#777D8C;
+  --blue:#1D4E89; --blue2:#2E6CB5; --blue-bg:#E8F0F9;
+  --red:#B23A2E; --red-bg:#FBE9E6;
+  --green:#2E7D5A; --green-bg:#E7F2EC;
+  --amber:#A97B1F; --amber-bg:#F6EDD8;
+  --line:#D8CEB2; --line2:#C4B896;
+  --shadow:0 1px 2px rgba(34,48,75,.06),0 6px 18px rgba(34,48,75,.07);
+  --radius:12px;
+  --serif:"Songti SC","STSong","Noto Serif CJK SC","SimSun",serif;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+  --mono:"SF Mono","Menlo","Consolas","Courier New",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--paper);color:var(--ink);font-family:var(--sans);
+  font-size:15.5px;line-height:1.75;min-height:100vh;
+}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(rgba(34,48,75,.045) 1px,transparent 1px);background-size:22px 22px;z-index:0}
+#app{position:relative;z-index:1}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+::selection{background:var(--blue);color:#fff}
+
+/* ============ 顶栏 ============ */
+.topbar{position:sticky;top:0;z-index:50;background:rgba(246,241,227,.92);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:1120px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:9px;font-family:var(--serif);font-weight:700;font-size:19px;color:var(--ink)}
+.brand .logo{width:34px;height:34px;border-radius:8px;background:var(--blue);color:#F6F1E3;
+  display:flex;align-items:center;justify-content:center;font-size:20px;font-family:Georgia,serif}
+.brand small{display:block;font-family:var(--sans);font-weight:400;font-size:11px;color:var(--muted);line-height:1.3}
+.nav{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+.nav a{padding:7px 12px;border-radius:8px;color:var(--ink2);font-size:14px;font-weight:500;white-space:nowrap}
+.nav a:hover{background:var(--paper2);text-decoration:none}
+.nav a.on{background:var(--blue);color:#fff}
+@media(max-width:820px){.topbar-inner{flex-direction:column;align-items:flex-start;gap:8px}
+  .nav{margin-left:0;width:100%;overflow-x:auto;padding-bottom:2px}}
+
+/* ============ 布局 ============ */
+.view{display:none;max-width:1120px;margin:0 auto;padding:26px 18px 70px}
+.view.on{display:block}
+.container{max-width:860px;margin:0 auto}
+.sec-title{font-family:var(--serif);font-size:24px;font-weight:700;margin:34px 0 16px;display:flex;align-items:center;gap:10px}
+.sec-title .no{font-family:var(--mono);font-size:14px;color:var(--blue);border:1.5px solid var(--blue);
+  border-radius:6px;padding:1px 7px;letter-spacing:.5px}
+.sec-title small{font-size:13px;color:var(--muted);font-weight:400;font-family:var(--sans)}
+.sub{color:var(--ink2);margin-bottom:6px}
+.hint{font-size:13px;color:var(--muted)}
+
+/* ============ 首页 Hero ============ */
+.hero{position:relative;border-radius:18px;background:linear-gradient(160deg,#1E3A5F 0%,#2A5C8F 55%,#3E74A8 100%);
+  color:#F2EEDD;padding:42px 34px 40px;overflow:hidden;box-shadow:var(--shadow)}
+.hero::after{content:"";position:absolute;right:-90px;top:-90px;width:300px;height:300px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.14),transparent 65%)}
+.hero .kicker{display:inline-block;font-size:12.5px;letter-spacing:2px;color:#CFE0F2;border:1px solid rgba(255,255,255,.35);
+  border-radius:999px;padding:3px 12px;margin-bottom:14px}
+.hero h1{font-family:var(--serif);font-size:38px;font-weight:700;line-height:1.3}
+.hero p{margin-top:10px;max-width:560px;color:#DFE8F3;font-size:15px}
+.hero-actions{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+.hero-actions a{padding:10px 18px;border-radius:9px;font-weight:600;font-size:14px}
+.hero-actions .pa{background:#F2EEDD;color:#1E3A5F}
+.hero-actions .pa:hover{background:#fff;text-decoration:none}
+.hero-actions .ga{border:1px solid rgba(255,255,255,.5);color:#F2EEDD}
+.hero-actions .ga:hover{background:rgba(255,255,255,.12);text-decoration:none}
+/* Hero 矩阵动画 */
+.hero-stage{position:absolute;right:26px;top:50%;transform:translateY(-50%);opacity:.96}
+.hm{display:grid;grid-template-columns:repeat(3,42px);gap:6px}
+.hm .c{width:42px;height:42px;border:1px solid rgba(255,255,255,.45);border-radius:7px;
+  display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:17px;color:#EAF1F9;
+  background:rgba(255,255,255,.07);opacity:0}
+.hm .c:nth-child(1){animation:cellIn .5s .15s forwards}
+.hm .c:nth-child(2){animation:cellIn .5s .3s forwards}
+.hm .c:nth-child(3){animation:cellIn .5s .45s forwards}
+.hm .c:nth-child(4){animation:cellIn .5s .6s forwards}
+.hm .c:nth-child(5){animation:cellIn .5s .75s forwards}
+.hm .c:nth-child(6){animation:cellIn .5s .9s forwards}
+.hm .c:nth-child(7){animation:cellIn .5s 1.05s forwards}
+.hm .c:nth-child(8){animation:cellIn .5s 1.2s forwards}
+.hm .c:nth-child(9){animation:cellIn .5s 1.35s forwards}
+@keyframes cellIn{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+.hm .chg{animation:chgVal 1.2s 2.1s forwards}
+@keyframes chgVal{0%{background:rgba(255,255,255,.07)}55%{background:rgba(255,255,255,.28);color:#FFD98A}100%{background:rgba(255,255,255,.07)}}
+.hm .lbl{grid-column:1/4;text-align:center;font-family:var(--mono);font-size:11px;color:#AFC6DE;margin-top:4px;letter-spacing:1px}
+.lam{position:absolute;font-family:Georgia,serif;font-size:44px;color:rgba(255,255,255,.16);
+  animation:floatY 6s ease-in-out infinite}
+.lam.l1{right:250px;top:22px}.lam.l2{right:330px;bottom:26px;font-size:30px;animation-delay:1.5s}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+@media(max-width:900px){.hero-stage{position:static;transform:none;margin-top:24px;justify-content:flex-start}
+  .hero{padding-bottom:34px}}
+@media(max-width:560px){.hero h1{font-size:29px}.hero{padding:28px 20px}}
+
+/* ============ 学习路径 ============ */
+.path{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:6px}
+@media(max-width:760px){.path{grid-template-columns:1fr 1fr}}
+.path-card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 16px 14px;box-shadow:var(--shadow)}
+.path-card .idx{font-family:var(--mono);font-size:12px;color:var(--blue);letter-spacing:1px}
+.path-card h3{font-family:var(--serif);font-size:17px;margin:6px 0 4px}
+.path-card p{font-size:13px;color:var(--ink2);line-height:1.6}
+.path-card .tag{display:inline-block;margin-top:8px;font-size:12px;padding:2px 9px;border-radius:999px;background:var(--paper2);color:var(--ink2)}
+.path-card.done{border-color:var(--green)}
+.path-card.done .tag{background:var(--green-bg);color:var(--green)}
+.path-card .arr{position:absolute;right:-14px;top:50%;transform:translateY(-50%);color:var(--line2);font-size:16px;z-index:2}
+@media(max-width:760px){.path-card .arr{display:none}}
+
+/* ============ 卡片与网格 ============ */
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:820px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.card h3{font-family:var(--serif);font-size:17px;margin-bottom:6px}
+.card .meta{font-size:12.5px;color:var(--muted);margin-bottom:8px}
+.quick{display:block;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;
+  box-shadow:var(--shadow);color:var(--ink);transition:transform .15s,box-shadow .15s}
+.quick:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(34,48,75,.12);text-decoration:none}
+.quick .ic{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:10px}
+.quick h3{font-family:var(--serif);font-size:16.5px}
+.quick p{font-size:13px;color:var(--ink2);margin-top:4px;line-height:1.6}
+
+/* ============ 按钮 / 标签 ============ */
+.btn{display:inline-flex;align-items:center;gap:6px;border:none;cursor:pointer;font-family:var(--sans);
+  font-size:14px;font-weight:600;padding:9px 16px;border-radius:9px;transition:filter .12s,background .12s}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:not(:disabled):hover{filter:brightness(.96)}
+.btn-p{background:var(--blue);color:#fff}
+.btn-r{background:var(--red);color:#fff}
+.btn-g{background:var(--green);color:#fff}
+.btn-o{background:var(--card);color:var(--ink);border:1.5px solid var(--line2)}
+.btn-o.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn-sm{padding:6px 11px;font-size:13px;border-radius:7px}
+.chip{display:inline-block;font-size:12.5px;padding:3px 10px;border-radius:999px;background:var(--paper2);
+  color:var(--ink2);border:1px solid var(--line);cursor:pointer;user-select:none}
+.chip.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.chip.green{background:var(--green-bg);color:var(--green);border-color:#B8DCC9}
+.chip.red{background:var(--red-bg);color:var(--red);border-color:#E5BFB8}
+
+/* ============ 知识地图 ============ */
+.map-chap{border-left:4px solid var(--blue);background:var(--card);border-radius:10px;padding:16px 18px;
+  margin-bottom:14px;box-shadow:var(--shadow);border-left-style:solid}
+.map-chap h3{font-family:var(--serif);font-size:18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.map-chap .pn{font-family:var(--mono);font-size:12px;color:#fff;background:var(--blue);border-radius:6px;padding:2px 8px}
+.map-chap .st{font-size:12px;color:var(--muted);font-weight:400;font-family:var(--sans)}
+.topics{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.topic{padding:7px 13px;border-radius:9px;font-size:13.5px;background:var(--paper);border:1px solid var(--line);
+  cursor:pointer;color:var(--ink);display:inline-flex;align-items:center;gap:6px}
+.topic:hover{border-color:var(--blue2);text-decoration:none}
+.topic .dot{width:7px;height:7px;border-radius:50%;background:var(--line2)}
+.topic.done{background:var(--green-bg);border-color:#B8DCC9}
+.topic.done .dot{background:var(--green)}
+.topic.unknown{background:var(--red-bg);border-color:#E5BFB8}
+.topic.unknown .dot{background:var(--red)}
+
+/* ============ 概念卡片 ============ */
+.concept{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 18px 14px;
+  margin-bottom:12px;box-shadow:var(--shadow)}
+.concept h3{font-family:var(--serif);font-size:18px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.concept .one{color:var(--ink2);font-size:14.5px;margin-top:6px;border-left:3px solid var(--amber);padding-left:10px;background:var(--amber-bg);border-radius:0 8px 8px 0;padding:8px 12px}
+.concept .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.detail{display:none;margin-top:12px;padding:14px;background:var(--paper);border:1px dashed var(--line2);border-radius:10px;font-size:14.5px}
+.detail.open{display:block}
+.detail .math{font-family:var(--serif)}
+.detail ul{margin:6px 0 6px 20px}
+.detail li{margin:3px 0}
+.formula{font-family:var(--serif);background:var(--card);border:1px solid var(--line);border-radius:8px;
+  padding:8px 14px;margin:8px 0;overflow-x:auto;font-size:15.5px}
+
+/* ============ 矩阵显示 ============ */
+.mat{display:inline-grid;vertical-align:middle;border-left:2.4px solid var(--ink);border-right:2.4px solid var(--ink);
+  padding:6px 14px;gap:2px;font-family:var(--serif)}
+.mat .r{display:grid;gap:10px;text-align:center;align-items:center}
+.mat .cell{padding:1px 2px;white-space:nowrap}
+.mat.blue{border-color:var(--blue)}
+.mat .hl{color:var(--red);font-weight:700}
+.mat .zero{color:#A9AEB9}
+.matcap{font-size:12px;color:var(--muted);margin-top:2px;font-family:var(--sans)}
+
+/* ============ 分步演示 ============ */
+.strategy{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.step{position:relative;background:var(--card);border:1px solid var(--line);border-radius:11px;
+  padding:14px 16px 12px 52px;margin-bottom:10px;box-shadow:var(--shadow)}
+.step .no{position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:7px;background:var(--blue);
+  color:#fff;font-family:var(--mono);font-size:13px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.step.done .no{background:var(--green)}
+.step h4{font-size:15px;font-weight:700;margin-bottom:4px}
+.step .op{font-family:var(--mono);font-size:13px;color:var(--blue);background:var(--blue-bg);border-radius:6px;
+  padding:1px 8px;display:inline-block;margin:2px 0}
+.step .why{background:var(--amber-bg);border-radius:8px;padding:8px 12px;margin-top:8px;font-size:13.5px;color:#6B5417}
+.step .why b{color:var(--amber)}
+.step .show{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:6px}
+.stepnav{display:flex;gap:8px;margin-top:14px;align-items:center;flex-wrap:wrap}
+
+/* ============ 工具 ============ */
+.tool-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.mi-table{border-collapse:separate;border-spacing:5px}
+.mi-table input{width:64px;height:38px;text-align:center;border:1.5px solid var(--line2);border-radius:8px;
+  font-family:var(--serif);font-size:15.5px;background:var(--card);color:var(--ink)}
+.mi-table input:focus{outline:2px solid var(--blue2);border-color:var(--blue2)}
+.mi-wrap{display:inline-block;border-left:2.4px solid var(--ink);border-right:2.4px solid var(--ink);
+  padding:6px 6px}
+.checks{display:flex;gap:14px;flex-wrap:wrap;margin:10px 0;font-size:14px}
+.checks label{display:flex;align-items:center;gap:6px;cursor:pointer}
+.checks input{width:16px;height:16px;accent-color:var(--blue)}
+.result-box{background:var(--card);border:1.5px solid var(--blue);border-radius:11px;padding:14px 16px;margin-top:12px}
+.result-box .big{font-family:var(--serif);font-size:26px;font-weight:700;color:var(--blue);margin-top:2px}
+.answer-input{font-family:var(--serif);font-size:15px;border:1.5px solid var(--line2);border-radius:8px;
+  padding:8px 12px;width:100%;background:var(--card)}
+.feedback{margin-top:8px;padding:9px 13px;border-radius:8px;font-size:14px;display:none}
+.feedback.ok{display:block;background:var(--green-bg);color:var(--green);border:1px solid #B8DCC9}
+.feedback.no{display:block;background:var(--red-bg);color:var(--red);border:1px solid #E5BFB8}
+.feedback.info{display:block;background:var(--blue-bg);color:var(--blue);border:1px solid #BFD6EC}
+
+/* ============ 练习 ============ */
+.quiz-item{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;
+  margin-bottom:12px;box-shadow:var(--shadow)}
+.quiz-item .q{font-family:var(--serif);font-size:15.5px;line-height:1.8}
+.quiz-item .tag{margin-right:6px}
+.opt-row{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.opt-btn{min-width:86px;padding:9px 16px;border-radius:9px;border:1.5px solid var(--line2);background:var(--card);
+  font-size:14.5px;font-weight:600;cursor:pointer;color:var(--ink);font-family:var(--serif)}
+.opt-btn:hover{border-color:var(--blue2)}
+.opt-btn.right{background:var(--green-bg);border-color:var(--green);color:var(--green)}
+.opt-btn.wrong{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.q-explain{display:none;margin-top:12px;padding:12px 14px;background:var(--paper);border:1px dashed var(--line2);
+  border-radius:9px;font-size:14px}
+.q-explain.open{display:block}
+.q-explain .verdict{font-weight:700}
+.q-explain .verdict.ok{color:var(--green)}.q-explain .verdict.no{color:var(--red)}
+
+/* ============ 进度 / 统计 ============ */
+.pbar{height:10px;border-radius:999px;background:var(--paper2);overflow:hidden;border:1px solid var(--line)}
+.pbar i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--blue2));border-radius:999px;transition:width .4s}
+.stat{text-align:center;padding:14px 8px}
+.stat .n{font-family:var(--serif);font-size:26px;font-weight:700}
+.stat .l{font-size:12.5px;color:var(--muted);margin-top:2px}
+.empty{padding:30px 20px;text-align:center;color:var(--muted);border:1.5px dashed var(--line2);border-radius:12px;margin-top:10px}
+.empty a{font-weight:600}
+
+/* ============ 错题复习 ============ */
+.wrong-item{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--red);border-radius:10px;
+  padding:14px 16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.wrong-item .wq{font-family:var(--serif);font-size:15px}
+.wrong-item .ans{margin-top:6px;font-size:13.5px;color:var(--ink2)}
+.wrong-item .ans b{color:var(--red)}
+.review-act{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+
+/* ============ 页脚 ============ */
+.foot{border-top:1px solid var(--line);margin-top:40px;padding:22px 18px 30px;text-align:center;
+  font-size:12.5px;color:var(--muted);max-width:1120px;margin-left:auto;margin-right:auto}
+.foot b{color:var(--ink2)}
+
+/* ============ 通用小件 ============ */
+.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;
+  padding:10px 20px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:all .25s;z-index:99}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.math{font-family:var(--serif)}
+.lam-word{font-family:Georgia,serif}
+.mono{font-family:var(--mono)}
+kbd{background:var(--paper2);border:1px solid var(--line2);border-radius:5px;padding:1px 6px;font-size:12px;font-family:var(--mono)}
+table.data{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px;table-layout:fixed}
+table.data th,table.data td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+table.data th{background:var(--paper2);font-weight:600}
+hr.sep{border:none;border-top:1px dashed var(--line2);margin:16px 0}
+
+/* ============ 名词释义库 ============ */
+.term{cursor:pointer;border-bottom:1.5px dotted var(--amber);color:#6B5417;padding:0 1px;border-radius:3px;transition:background .15s}
+.term:hover{background:var(--amber-bg)}
+.term-pop{position:fixed;max-width:340px;background:var(--card);border:1px solid var(--line2);border-radius:12px;
+  box-shadow:0 10px 30px rgba(34,48,75,.18);padding:12px 14px;z-index:120;font-size:14px;line-height:1.6}
+.term-pop b{font-family:var(--serif);font-size:15px;color:var(--ink)}
+.term-pop p{margin:6px 0 0;color:var(--ink2)}
+.term-pop .formula{margin-top:6px;background:var(--amber-bg);border-radius:8px;padding:6px 10px;font-family:var(--serif);color:#6B5417}
+.term-pop .sub{margin-top:8px;font-size:12.5px}
+.term-pop .sub a{color:var(--amber);text-decoration:underline}
+.g-search{width:100%;max-width:520px;padding:11px 16px;border-radius:10px;border:1.5px solid var(--line2);
+  background:var(--card);color:var(--ink);font-size:15px;margin-bottom:12px;box-sizing:border-box}
+.g-search:focus{outline:none;border-color:var(--amber)}
+.g-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.g-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+@media (max-width:640px){.g-grid{grid-template-columns:1fr}}
+.g-card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:14px}
+.g-card h4{font-family:var(--serif);font-size:15.5px;color:var(--ink);display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 6px}
+.g-card p{margin:0 0 6px;color:var(--ink2);line-height:1.65}
+.g-card .formula{font-family:var(--serif);color:#6B5417;background:var(--amber-bg);border-radius:6px;padding:4px 8px;display:inline-block;margin-bottom:6px}
+.g-card .link{font-size:12px}
+.g-card .link a{color:var(--amber);text-decoration:underline}
+.g-empty{padding:30px 10px;text-align:center;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ===== 顶栏 ===== -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#/home">
+      <span class="logo">λ</span>
+      <span>矩阵论互动学习站<small>研一 · 基于复习资料 · 全中文</small></span>
+    </a>
+    <nav class="nav" id="topnav">
+      <a href="#/home" data-nav="home">首页</a>
+      <a href="#/map" data-nav="map">知识框架</a>
+      <a href="#/concept" data-nav="concept">基础概念</a>
+      <a href="#/glossary" data-nav="glossary">名词释义库</a>
+      <a href="#/examples" data-nav="examples">例题演示</a>
+      <a href="#/tools" data-nav="tools">互动工具</a>
+      <a href="#/practice" data-nav="practice">练习</a>
+      <a href="#/review" data-nav="review">错题复习</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ===== 视图：首页 ===== -->
+<section class="view" id="view-home">
+  <div class="hero">
+    <span class="kicker">MATRIX THEORY · 互动学习站</span>
+    <h1>矩阵论，可以一步步<br>「看懂」地学</h1>
+    <p>围绕你的复习资料，从基础概念出发：先看例题一步一步怎么算、为什么这样算，再亲手输入矩阵、变换行、算行列式，最后用练习和错题复习把知识钉牢。</p>
+    <div class="hero-actions">
+      <a class="pa" href="#/map">开始学习：知识框架总览</a>
+      <a class="ga" href="#/tools">打开互动工具</a>
+    </div>
+    <div class="hero-stage" aria-hidden="true">
+      <div class="hm">
+        <div class="c">2</div><div class="c">1</div><div class="c chg">0</div>
+        <div class="c">1</div><div class="c chg">-1</div><div class="c">2</div>
+        <div class="c chg">3</div><div class="c">0</div><div class="c">1</div>
+        <div class="lbl">R₂ ← R₂ − 2R₁</div>
+      </div>
+    </div>
+    <span class="lam l1">λ</span><span class="lam l2">det</span>
+  </div>
+
+  <h2 class="sec-title"><span class="no">01</span>学习流程<small>一条路走完，概念→演示→练习→复习</small></h2>
+  <div class="path">
+    <div class="path-card" id="path-1"><span class="idx">STEP 1</span><h3>基础概念</h3><p>每个知识点先给一句大白话，看不懂再展开详细版。</p><span class="tag">已学 <b id="st-learned1">0</b></span><span class="arr">→</span></div>
+    <div class="path-card" id="path-2"><span class="idx">STEP 2</span><h3>例题分步演示</h3><p>每步都告诉你“做了什么、为什么这么做”，还能切换解法。</p><span class="tag">内置 <b>13</b> 例</span><span class="arr">→</span></div>
+    <div class="path-card" id="path-3"><span class="idx">STEP 3</span><h3>交互练习</h3><p>矩阵输入、行变换、行列式、特征多项式，动手才算会。</p><span class="tag">判断+填空 <b id="st-quiz">0</b></span><span class="arr">→</span></div>
+    <div class="path-card" id="path-4"><span class="idx">STEP 4</span><h3>错题复习</h3><p>做错的题和“不会”的知识点自动收进这里，随时重做。</p><span class="tag">错题 <b id="st-wrong">0</b></span></div>
+  </div>
+
+  <h2 class="sec-title"><span class="no">02</span>快速开始</h2>
+  <div class="grid g4">
+    <a class="quick" href="#/map"><div class="ic" style="background:var(--blue-bg);color:var(--blue)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 9h18M9 5v14M15 5v14"/></svg></div><h3>知识框架总览</h3><p>六章知识点地图，一眼看清复习结构，点击直达。</p></a>
+    <a class="quick" href="#/examples"><div class="ic" style="background:var(--amber-bg);color:var(--amber)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20l4-1L20 7l-3-3L5 16l-1 4z"/><path d="M14 6l3 3"/></svg></div><h3>例题分步演示</h3><p>真题步骤逐条展开，每步都解释“为什么”。</p></a>
+    <a class="quick" href="#/tools"><div class="ic" style="background:var(--green-bg);color:var(--green)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg></div><h3>互动工具台</h3><p>矩阵输入、行变换、行列式、特征多项式一屏搞定。</p></a>
+    <a class="quick" href="#/practice"><div class="ic" style="background:var(--red-bg);color:var(--red)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12.5l5 5L20 7"/></svg></div><h3>交互练习</h3><p>判断题、填空题即时判分，错题自动进入错题本。</p></a>
+  </div>
+
+  <h2 class="sec-title"><span class="no">03</span>我的学习进度</h2>
+  <div class="card">
+    <div class="grid g4" style="margin-bottom:14px">
+      <div class="stat"><div class="n" id="st-concepts">0</div><div class="l">已学会的概念</div></div>
+      <div class="stat"><div class="n" id="st-unknown">0</div><div class="l">标记“不会”的知识点</div></div>
+      <div class="stat"><div class="n" id="st-quiz2">0</div><div class="l">已完成的练习</div></div>
+      <div class="stat"><div class="n" id="st-wrong2">0</div><div class="l">待复习错题</div></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px">
+      <span>概念掌握进度</span><span id="st-pct">0%</span>
+    </div>
+    <div class="pbar"><i id="st-bar" style="width:0%"></i></div>
+    <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+      <a class="btn btn-p" href="#/concept">继续学概念</a>
+      <button class="btn btn-o" id="btn-reset">清空本地学习记录</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 视图占位：其余视图由 JS 渲染 ===== -->
+<section class="view" id="view-map"></section>
+<section class="view" id="view-concept"></section>
+<section class="view" id="view-examples"></section>
+<section class="view" id="view-tools"></section>
+<section class="view" id="view-practice"></section>
+<section class="view" id="view-review"></section>
+<section class="view" id="view-glossary"></section>
+
+</div>
+<div class="toast" id="toast"></div>
+<script>
+'use strict';
+// ============ 小工具：矩阵渲染 ============
+function M(A,opt){
+  opt=opt||{};const hl=opt.hl||null,cls=opt.cls||'',rws=opt.rows||[];
+  let h='<span class="mat '+cls+'">';
+  for(let i=0;i<A.length;i++){
+    h+='<span class="r" style="grid-template-columns:repeat('+A[i].length+',auto)">';
+    for(let j=0;j<A[i].length;j++){
+      let v=A[i][j];const isH=hl&&hl.some(p=>p[0]===i&&p[1]===j);
+      const isZ=(typeof v==='number'&&v===0)||v==='0';
+      h+='<span class="cell'+(isH?' hl':'')+(isZ?' zero':'')+'">'+v+'</span>';
+    }
+    if(rws[i])h+='<span class="cell" style="color:var(--muted);font-size:12px;margin-left:6px">'+rws[i]+'</span>';
+    h+='</span>';
+  }
+  return h+'</span>';
+}
+function rd(x){return Math.round(x*1e9)/1e9}
+function fmt(x){ // 数字转显示字符串（整数/小数/分数尽量友好）
+  if(typeof x!=='number')return String(x);
+  if(Math.abs(x-Math.round(x))<1e-9)return String(Math.round(x));
+  const s=rd(x);return String(s);
+}
+
+// ============ 章节框架（依据复习资料 PDF 结构） ============
+const CHAPTERS=[
+  {id:'c0',num:'基础',title:'线性代数基础（小白先看）',st:'本科回顾 · 忘光了从这里开始',concepts:['k-det','k0-field','k0-mat','k0-vec','k0-solve','k0-rank','k0-inv','k0-inner','k0-eig','k0-form2'],ex:[],tools:['行列式计算','行变换演示','特征多项式']},
+  {id:'c1',num:'第1章',title:'线性空间与线性变换',st:'基础中的基础',concepts:['k-lin','k-set','k-sub','k-basis','k-trans','k-linmap','k-eig','k-cayley','k-minpoly','k-invsub','k-jordan','k-euclid','k-unitary'],ex:['ex-map','ex-trans','ex-jordan','ex-sym','ex-proof-sub','ex-minpoly','ex-lincheck','ex-rangenn','ex-charpoly','ex-diag','ex-cayley','ex-jordanP','ex-odesys','ex-schmidt','ex-orthoP'],tools:['特征多项式','行列式计算']},
+  {id:'c2',num:'第2章',title:'范数理论及其应用',st:'度量与收敛',concepts:['k-vnorm','k-equv','k-mnorm','k-spectral','k-converge','k-series','k-cond'],ex:['ex-converge','ex-norm-proof','ex-limseq','ex-lpnorm','ex-weighted','ex-equv','ex-mnormcompat','ex-subnorm'],tools:['矩阵输入']},
+  {id:'c3',num:'第3章',title:'矩阵分析及其应用',st:'矩阵函数与微分方程',concepts:['k-exp','k-trig','k-mfunc','k-ode','k-mcalc','k-kron'],ex:['ex-exp','ex-trig','ex-mfunc','ex-midem','ex-mexp','ex-msin','ex-minv','ex-msqrt','ex-mgrad','ex-mchain','ex-mode','ex-mode2'],tools:['矩阵输入']},
+  {id:'c4',num:'第4章',title:'矩阵分解',st:'拆开看透结构',concepts:['k-ldu','k-qr','k-givens','k-house','k-svd','k-rankfact','k-gersh','k-sym2'],ex:['ex-qr','ex-svd','ex-gersh','ex-house','ex-qrschmidt','ex-givens','ex-fullrank','ex-hermitestd','ex-svdfull','ex-rankineq'],tools:['行变换演示','行列式计算']},
+  {id:'c5',num:'第5章',title:'特征值估计与对称矩阵的惯性',st:'结构性质（资料题少，作框架）',concepts:['k-rank','k-eigbound','k-inertia','k-rayleigh','k-mateq'],ex:['ex-gersh2','ex-cassini','ex-kroncalc','ex-mateq'],tools:['行变换演示']},
+  {id:'c6',num:'第6章',title:'广义逆矩阵',st:'方程求解的“万能钥匙”',concepts:['k-ginv','k-mp','k-leastsq','k-proj'],ex:['ex-pseudo','ex-proj','ex-penrose','ex-columnfull','ex-ginv1','ex-ginv2','ex-projgen','ex-solve1','ex-leastsq'],tools:['矩阵输入']}
+];
+
+// ============ 概念库（30 个，每个：一句大白话 + 可展开详解） ============
+const CONCEPTS={
+'k-det':{ch:'c0',title:'行列式的计算与初等行变换',one:'行列式就是把方阵“算成一个数”的规则；按某一行/列展开是基本武器，行变换能把大行列式变简单。',tags:['工具基础','高频计算'],
+detail:'<p><b>展开（拉普拉斯）公式：</b>对第 i 行展开</p><div class="formula math">det A = Σ<sub>j</sub> (−1)<sup>i+j</sup> a<sub>ij</sub>·M<sub>ij</sub></div><p>其中 M<sub>ij</sub> 是划去第 i 行第 j 列后剩下的 <b>n−1 阶子式</b>。2 阶：ad−bc；3 阶可用“按第一行展开”一次算出。</p><p><b>三个“保号/变号”性质（做题全靠它）：</b></p><ul><li>某一行加上另一行的 k 倍 → 行列式<b>不变</b>（用来消元）；</li><li>交换两行 → 行列式<b>变号</b>；</li><li>某一行乘 k → 行列式乘 k（可把公因子提出来）。</li></ul><p><b>上三角行列式</b> = 对角线元素乘积，这是“化为上三角再算”策略的终点。</p><p><b>为什么优先选“0 多 / 1 多”的行或列展开？</b>因为 a<sub>ij</sub>=0 的项整个为 0，展开项直接减少。</p>'},
+'k-lin':{ch:'c1',title:'线性空间',one:'一组“东西”，既能两两相加、又能被一个数放大缩小，而且加完乘完仍然在这组东西里——就构成一个线性空间。',tags:['判断高频'],
+detail:'<p>严格定义：数域 K 上的集合 V，定义了加法与数乘，满足 8 条（交换、结合、零元、负元、数乘结合、两个分配律、1·x=x）。</p><p>考试不背 8 条，重点会<b>判断</b>：常见集合到底是不是线性空间。</p><ul><li>实对称矩阵全体 → 是（对称阵相加、数乘仍对称）；</li><li>“次数恰好等于 m”的多项式全体 → <b>不是</b>（两个 m 次多项式相加可能变成更低次，且不含零多项式）；</li><li>“次数不超过 m”的多项式全体 → 是。</li></ul><p>判据就两条：<b>对加法封闭、对数乘封闭</b>（加上零元存在）。</p>'},
+'k-sub':{ch:'c1',title:'子空间与维数公式',one:'子空间就是“自己关得住”的角落；两个子空间的“和”与“交”的维数之间有条重要等式。',tags:['判断高频','证明'],
+detail:'<p><b>子空间判定：</b>非空子集 W，对加法和数乘都封闭。</p><ul><li>W<sub>1</sub>∩W<sub>2</sub>：是子空间；</li><li>W<sub>1</sub>+W<sub>2</sub>={w<sub>1</sub>+w<sub>2</sub>}：是子空间；</li><li>W<sub>1</sub>∪W<sub>2</sub>：<b>一般不</b>是子空间（两边的向量加起来可能跑出去）。</li></ul><p><b>维数公式：</b></p><div class="formula math">dim(W<sub>1</sub>+W<sub>2</sub>) + dim(W<sub>1</sub>∩W<sub>2</sub>) = dim W<sub>1</sub> + dim W<sub>2</sub></div><p>所以资料里“dimV<sub>1</sub>+dimV<sub>2</sub>=dim(V<sub>1</sub>+V<sub>2</sub>)”是<b>错的</b>——少了交的维数。证明套路：验证封闭性（见例题）。</p>'},
+'k-basis':{ch:'c1',title:'基与坐标',one:'基是一组“最精简的拼图块”，空间里每个向量都能被它们唯一拼出来；拼的时候用的“块数”就是坐标。',tags:['基础'],
+detail:'<p>一组向量是基 ⇔ 线性无关 + 能张成整个空间。n 维空间里任何基都有 n 个向量。</p><p>任给向量 x，写成基的线性组合 x=λ<sub>1</sub>x<sub>1</sub>+…+λ<sub>n</sub>x<sub>n</sub>，系数 (λ<sub>1</sub>,…,λ<sub>n</sub>) 就是 x 在该基下的<b>坐标</b>。基不同，坐标不同。</p><p>常用记号：标准基 e<sub>1</sub>=(1,0,…,0) 等。</p>'},
+'k-trans':{ch:'c1',title:'过渡矩阵',one:'换一套基时，用矩阵把新旧基“翻译”一下，这个矩阵叫过渡矩阵。',tags:['计算'],
+detail:'<p>设旧基 X=(x<sub>1</sub>,…,x<sub>n</sub>)，新基 Y=(y<sub>1</sub>,…,y<sub>n</sub>)，则</p><div class="formula math">Y = X·P</div><p>P 称为<b>从 X 到 Y 的过渡矩阵</b>，求法：P = X<sup>−1</sup>Y。</p><p>坐标怎么换：同一个向量在 Y 下的坐标 u、在 X 下的坐标 v，满足 <b>v = P·u</b>（先算 X 下坐标，再乘过渡矩阵）。</p><p>做题三步：①把两组基按列拼成矩阵 X、Y；②求 X 的逆；③乘出 P。求逆时先看行列式是否好算（如对角、三角）。</p>'},
+'k-linmap':{ch:'c1',title:'线性变换及其矩阵',one:'一种“保持加法和数乘”的搬动叫线性变换；一旦选定基，它就用一个矩阵来表示。',tags:['判断','计算'],
+detail:'<p>线性变换 T 满足 T(ax+by)=aT(x)+bT(y)。</p><p>在基 e 下，把每个基向量的像写出来排成列：</p><div class="formula math">(T(e<sub>1</sub>),…,T(e<sub>n</sub>)) = (e<sub>1</sub>,…,e<sub>n</sub>)·A</div><p>A 就是 T 在该基下的矩阵。做题：把基向量一个个代入 T，结果按列排。</p><p><b>换基</b>：T 在基 X 下是 A、在基 Y 下是 B，则 B = P<sup>−1</sup>AP（P 为过渡矩阵）——所以资料判断题“线性变换在不同基下的矩阵<b>相似</b>（√）、<b>合同</b>（×）”。</p>'},
+'k-eig':{ch:'c1',title:'特征值与特征向量',one:'矩阵作用到某个非零向量上，只是把它“拉长或缩短”、方向不变，拉缩的倍数就是特征值。',tags:['核心概念'],
+detail:'<p>Ax=λx，x≠0：λ 是特征值，x 是对应特征向量。</p><p>求法：</p><ul><li>① 写特征方程 det(λI−A)=0，解出 λ；</li><li>② 对每个 λ，解齐次方程 (λI−A)x=0，得特征向量；</li><li>③ 特征值之和 = tr A，特征值之积 = det A（用来验算）。</li></ul><p>记住：特征多项式里是 <b>λI−A</b>（不是 A−λI 也差个符号，按课本统一用 λI−A）。</p>'},
+'k-cayley':{ch:'c1',title:'特征多项式与 Cayley–Hamilton 定理',one:'把矩阵代进它自己的特征多项式，结果一定是零矩阵——这个结论能化简很多计算。',tags:['判断高频'],
+detail:'<p>f(λ)=det(λI−A)=λ<sup>n</sup>+c<sub>n−1</sub>λ<sup>n−1</sup>+…+c<sub>0</sub>。</p><p><b>Cayley–Hamilton 定理：f(A)=O。</b>资料判断题直接考（√）。</p><p>用途：</p><ul><li>把 A<sup>n</sup> 降成低次幂的线性组合（递推化简）；</li><li>由 f(A)=0 解出 A<sup>−1</sup>（若常数项 c<sub>0</sub>≠0）。</li></ul><p>站点“特征多项式”工具里可以直接验算 f(A)=O。</p>'},
+'k-jordan':{ch:'c1',title:'相似对角化与 Jordan 标准形',one:'很多矩阵不能真对角化，但总可以化成“几乎对角”的若尔当形——由对角线和 1 拼成的小块组成。',tags:['计算','难点'],
+detail:'<p><b>可对角化条件：</b>有 n 个线性无关的特征向量 ⇔ 每个特征值的几何重数 = 代数重数。</p><p><b>Jordan 块：</b>J<sub>k</sub>(λ)=[λ,1,0,…;0,λ,1,…;…]（k 阶，对角全 λ、上副对角线全 1）。</p><p><b>Jordan 标准形</b>由若干 Jordan 块拼成对角块矩阵。</p><p>求法路线：λI−A 的行列式因子 / 不变因子 → <b>初等因子</b>（形如 (λ−λ<sub>0</sub>)<sup>k</sup>）→ 每个初等因子对应一个 k 阶 Jordan 块 → 拼起来。</p><p>小技巧：若特征值 λ<sub>0</sub> 的代数重数 = 2 而几何重数 = 1，就有一个 2 阶 Jordan 块。</p>'},
+'k-vnorm':{ch:'c2',title:'向量范数',one:'衡量向量“多长”的尺子，规矩只有三条：非负、齐次、三角不等式。',tags:['证明','计算'],
+detail:'<p>范数三条公理：</p><ul><li>① ||x||≥0，且 ||x||=0 ⇔ x=0；</li><li>② ||kx||=|k|·||x||；</li><li>③ ||x+y||≤||x||+||y||（三角不等式）。</li></ul><p>常用：l<sub>1</sub>=Σ|ξ<sub>i</sub>|、l<sub>2</sub>=√Σ|ξ<sub>i</sub>|²、l<sub>∞</sub>=max|ξ<sub>i</sub>|。证明“是范数”就是逐条验这三条（资料证明题）。有限维空间里范数都等价。</p>'},
+'k-mnorm':{ch:'c2',title:'矩阵范数',one:'把矩阵也“量个长度”，还要满足和向量范数的配合条件（相容性），考试常考定义与计算。',tags:['定义','计算'],
+detail:'<p>矩阵范数 = 向量范数三条 + <b>相容性</b> ||Ax||≤||A||·||x||（至少与一种向量范数相容）。</p><p>常用定义：</p><ul><li>||A||<sub>1</sub> = 列和最大值（每列绝对值之和，取最大）；</li><li>||A||<sub>∞</sub> = 行和最大值；</li><li>||A||<sub>F</sub> = √Σ|a<sub>ij</sub>|²（Frobenius）；</li><li>||A||<sub>2</sub> = 谱范数 = √(A<sup>H</sup>A 的最大特征值)。</li></ul><p>资料填空题常考 “||A||<sub>1</sub>、||A||<sub>∞</sub>、||A||<sub>F</sub> 各是多少”。</p>'},
+'k-spectral':{ch:'c2',title:'谱半径',one:'特征值模长的最大值，是矩阵“真实大小”的底线。',tags:['判断高频'],
+detail:'<p>ρ(A)=max|λ<sub>i</sub>|。</p><ul><li>对任意矩阵范数：<b>ρ(A) ≤ ||A||</b>（资料判断 √）；</li><li>反之：对任一 ε&gt;0，存在范数使 ||A||≤ρ(A)+ε（资料判断 √）；</li><li>谱半径公式：ρ(A)=lim<sub>k→∞</sub>||A<sup>k</sup>||<sup>1/k</sup>。</li></ul><p>用途：判断收敛矩阵、估计矩阵幂级数是否收敛。</p>'},
+'k-converge':{ch:'c2',title:'收敛矩阵',one:'矩阵自己反复乘自己，乘很多很多次之后趋近零矩阵，就叫收敛矩阵。',tags:['判断','计算'],
+detail:'<p><b>充要条件：A<sup>k</sup>→O ⇔ ρ(A)&lt;1。</b></p><p>判别两条路：</p><ul><li>① 直接算谱半径 ρ(A)&lt;1；</li><li>② 找到一种范数 ||A||&lt;1（因为 ρ(A)≤||A||，找范数更省事）。</li></ul><p>例：资料题 A=[[0.1,0.3],[0.7,0.6]]，||A||<sub>1</sub>=max(0.8,0.9)=0.9&lt;1 ⇒ 收敛。</p><p>例：A=[[0,c,c],[c,0,c],[c,c,0]] 特征值 2c、−c、−c ⇒ 收敛 ⇔ |c|&lt;1/2。</p>'},
+'k-series':{ch:'c2',title:'矩阵幂级数',one:'把数的幂级数公式搬到矩阵上：收敛时，∑A<sup>k</sup> 就等于 (I−A)<sup>−1</sup>。',tags:['计算'],
+detail:'<p>当 ρ(A)&lt;1（A 收敛）时：</p><div class="formula math">Σ<sub>k=0</sub><sup>∞</sup> A<sup>k</sup> = I + A + A² + … = (I−A)<sup>−1</sup></div><p>验证思路：(I−A)(I+A+…+A<sup>m</sup>) = I−A<sup>m+1</sup>，m→∞ 得 I。</p><p>做题：①先证收敛（范数或谱半径）；②求 I−A 的逆。资料解答题“判断是否收敛并计算 ∑A<sup>k</sup>”就是这个套路。</p>'},
+'k-exp':{ch:'c3',title:'矩阵指数 e^{At}',one:'用 e 的泰勒级数定义“e 的矩阵次方”，是解微分方程组的核心工具。',tags:['计算','难点'],
+detail:'<p>定义：</p><div class="formula math">e<sup>At</sup> = I + At + (At)²/2! + (At)³/3! + …</div><p>性质：</p><ul><li>e<sup>A(t+s)</sup>=e<sup>At</sup>e<sup>As</sup>； (e<sup>At</sup>)<sup>−1</sup>=e<sup>−At</sup>；</li><li>d/dt e<sup>At</sup> = A·e<sup>At</sup>；</li><li>若 A=PJP<sup>−1</sup>（J 为 Jordan 形），则 e<sup>At</sup>=P·e<sup>Jt</sup>·P<sup>−1</sup>。</li></ul><p><b>反求 A 的黄金公式：</b>A = (d/dt e<sup>At</sup>)|<sub>t=0</sub>。资料解答题“已知 e<sup>At</sup> 求 A”就是逐项对 t 求导、再令 t=0。</p>'},
+'k-trig':{ch:'c3',title:'矩阵三角函数 sinA、cosA',one:'sin、cos 也能作用在矩阵上，定义方式与 e^{At} 一样；还有矩阵版的欧拉公式。',tags:['计算'],
+detail:'<p>sin A = Σ(−1)<sup>k</sup>A<sup>2k+1</sup>/(2k+1)!，cos A = Σ(−1)<sup>k</sup>A<sup>2k</sup>/(2k)!。</p><p><b>矩阵欧拉公式：e<sup>jA</sup> = cosA + j·sinA</b>（j=√−1，资料证明题）。</p><p><b>由 sin(At) 反求 A：</b>d/dt sin(At) = A·cos(At)，令 t=0 ⇒ A = (d/dt sin At)|<sub>t=0</sub>。所以见到 sin At 的矩阵，逐项对 t 求导再代 t=0 就行。</p>'},
+'k-ode':{ch:'c3',title:'一阶线性微分方程组',one:'x′ = Ax + b(t) 的解可以写成闭式公式，矩阵指数直接出场。',tags:['计算'],
+detail:'<p>齐次 x′=Ax 的通解：x(t)=e<sup>A(t−t<sub>0</sub>)</sup>x<sub>0</sub>。</p><p>非齐次 x′=Ax+b(t) 的解（常数变易法）：</p><div class="formula math">x(t) = e<sup>A(t−t<sub>0</sub>)</sup>x<sub>0</sub> + ∫<sub>t<sub>0</sub></sub><sup>t</sup> e<sup>A(t−s)</sup>b(s) ds</div><p>做题顺序：①先算 e<sup>At</sup>（用对角化/Jordan）；②套公式；③代入初始条件定 x<sub>0</sub>。资料解答题两小问（求 e<sup>At</sup>、求初值解）就是这个流程。</p>'},
+'k-kron':{ch:'c3',title:'Kronecker 积 A⊗B',one:'把两个矩阵“拼”成一个大矩阵的运算；最妙的是特征值正好两两相乘。',tags:['填空'],
+detail:'<p>A⊗B = [a<sub>ij</sub>B]（把 A 的每个元素换成 a<sub>ij</sub>·B 这块小矩阵）。A 为 n×n、B 为 m×m 时，A⊗B 是 nm×nm。</p><p>关键性质：</p><ul><li>特征值：{λ<sub>i</sub>μ<sub>j</sub>}（A 的特征值×B 的特征值，全部组合）；</li><li>det(A⊗B) = (det A)<sup>m</sup>·(det B)<sup>n</sup>；</li><li>tr(A⊗B) = tr A · tr B。</li></ul><p>所以资料题“A⊗B 的全部特征值”先分别求 A、B 的特征值再两两相乘。</p>'},
+'k-ldu':{ch:'c4',title:'LDU 分解',one:'把矩阵拆成“下三角 × 对角 × 上三角”，存在且有唯一解的条件很苛刻。',tags:['判断'],
+detail:'<p>A=LDU：L 单位下三角（对角全 1）、D 对角、U 单位上三角。</p><p><b>存在且唯一的充要条件：A 的顺序主子式都不为零</b>（资料口径：前 n−1 个顺序主子式非零）。</p><p>所以“A 可逆就一定有唯一 LDU 分解”是<b>错</b>的——可逆 ≠ 顺序主子式全非零。做题：对 A 做“只用行倍加”的高斯消元，把主元提出来放 D。</p>'},
+'k-qr':{ch:'c4',title:'QR 分解',one:'把矩阵拆成“正交阵 × 上三角阵”，本质是把列向量组“掰成正交的单位向量组”。',tags:['计算','难点'],
+detail:'<p>A=QR：Q 列正交（Q<sup>H</sup>Q=I），R 上三角。做法三种：</p><ul><li>① <b>Gram–Schmidt 正交化</b>：对列向量逐步正交化、单位化，得 Q；R 的元素就是投影系数；</li><li>② <b>Householder 反射</b>：每次用一个反射矩阵把一列的下方清零；</li><li>③ <b>Givens 旋转</b>：每次用一个旋转把某个分量清零。</li></ul><p>做题常用施密特：q<sub>1</sub>=a<sub>1</sub>/||a<sub>1</sub>||，u<sub>2</sub>=a<sub>2</sub>−(a<sub>2</sub>·q<sub>1</sub>)q<sub>1</sub>，q<sub>2</sub>=u<sub>2</sub>/||u<sub>2</sub>||，…；R 的 (i,j) 元素 = a<sub>j</sub>·q<sub>i</sub>（i&lt;j 处为 0）。</p>'},
+'k-givens':{ch:'c4',title:'初等旋转与初等反射矩阵',one:'两种能把向量“某个分量清零”的矩阵，是 QR 分解的机械零件。',tags:['填空','判断'],
+detail:'<p><b>Givens 旋转</b> T(i,j,θ)：只在 (i,j) 平面上转 θ。作用在 x 上可把 x<sub>i</sub>,x<sub>j</sub> 变成 (r,0)，其中 r=√(x<sub>i</sub>²+x<sub>j</sub>²)，cosθ=x<sub>i</sub>/r，sinθ=x<sub>j</sub>/r。资料题：T(3,0,4)=5e<sub>1</sub> ⇒ 在 (1,3) 平面转，cosθ=3/5、sinθ=4/5。</p><p><b>Householder 反射</b> H=I−2uu<sup>H</sup>/||u||²。取 u=x−||x||e<sub>1</sub> 可使 Hx=||x||e<sub>1</sub>（资料题“求 H 使 Hx 与 e<sub>1</sub> 同向”）。</p><p>判断：初等旋转可表为若干初等反射之积（√）；初等反射一般不能表为两个旋转之积（×）。</p>'},
+'k-svd':{ch:'c4',title:'奇异值分解',one:'任何矩阵都能拆成“旋转 × 缩放 × 旋转”，缩放倍数就是奇异值。',tags:['判断','计算'],
+detail:'<p>A<sub>m×n</sub>=UΣV<sup>H</sup>：U、V 酉阵，Σ 为 m×n 对角阵（对角元非负、降序）。</p><p>奇异值 = √(A<sup>H</sup>A 的特征值)（非零部分），也 = √(AA<sup>H</sup> 的非零特征值)。</p><p><b>存在性：任何矩阵都有 SVD。</b>唯一性：奇异值唯一（降序），但 U、V 不唯一（可换符号/重排）。资料判断题“任意矩阵都有唯一的 SVD”是<b>×</b>。</p><p>做题：①算 A<sup>H</sup>A（或 AA<sup>H</sup>）的特征值；②开方得奇异值。资料题 A=[[1,0],[0,1],[1,1]] ⇒ A<sup>H</sup>A=[[2,1],[1,2]] ⇒ 奇异值 √3、1。</p>'},
+'k-rankfact':{ch:'c4',title:'满秩分解',one:'把“不够满”的矩阵拆成“瘦高 × 矮胖”两块满秩矩阵，这是求伪逆的跳板。',tags:['计算'],
+detail:'<p>秩 r 的 A<sub>m×n</sub> = F·G：F<sub>m×r</sub> 列满秩，G<sub>r×n</sub> 行满秩。</p><p>做法：</p><ul><li>① 对 A 做初等行变换到行最简形，记下主元列位置；</li><li>② F 取 A 的主元列；</li><li>③ G 取行最简形的前 r 行（非零行）。</li></ul><p>用途：A⁺=G⁺F⁺（G 行满秩 ⇒ G⁺=G<sup>H</sup>(GG<sup>H</sup>)<sup>−1</sup>；F 列满秩 ⇒ F⁺=(F<sup>H</sup>F)<sup>−1</sup>F<sup>H</sup>）。</p>'},
+'k-gersh':{ch:'c4',title:'盖尔圆定理',one:'不用打开矩阵算特征值，先在复平面上画几个圆，特征值就“锁”在圆里。',tags:['判断','证明'],
+detail:'<p>第 i 个盖尔圆：G<sub>i</sub>: |z−a<sub>ii</sub>| ≤ R<sub>i</sub>，其中 R<sub>i</sub>=Σ<sub>j≠i</sub>|a<sub>ij</sub>|（第 i 行非对角元绝对值之和）。</p><p><b>定理：所有特征值都落在全部盖尔圆的并集内。</b>若某个连通分支由 k 个圆组成且与其余圆不相交，则该分支恰含 k 个特征值（计重数）。</p><p>用途：</p><ul><li>分离/估计特征值（资料解答题：画圆、指出区域）；</li><li>证明有实特征值（结合共轭对称性）；</li><li>判断可逆：0 不在并集内时矩阵可逆（对角占优特例）。</li></ul>'},
+'k-sym2':{ch:'c4',title:'对称矩阵的极性（正交对角化）',one:'实对称矩阵特别“正”，总能用一个正交矩阵把它变成对角形。',tags:['计算'],
+detail:'<p>实对称（或 Hermite）矩阵的性质：</p><ul><li>特征值全是实数；</li><li>不同特征值的特征向量彼此正交；</li><li>存在正交矩阵 P 使 P<sup>T</sup>AP = D（对角形）。</li></ul><p>做题（资料题“求正交 P 使 P<sup>T</sup>AP 成对角形”）：①求特征值；②每个特征值解方程得单位特征向量；③不同特征值的向量自动正交，重特征值内部再做一次正交化；④P 由这些单位向量按列排成。</p>'},
+'k-rank':{ch:'c5',title:'矩阵秩的估计',one:'先不细算，用几条不等式把秩圈在一个范围里。',tags:['了解'],
+detail:'<p>常用不等式（考试以判断/填空形式出现）：</p><ul><li>rank(AB) ≤ min(rank A, rank B)；</li><li>rank(A+B) ≤ rank A + rank B；</li><li>Sylvester：A、B 为 n 阶时，rank A + rank B − n ≤ rank(AB)；</li><li>A<sub>m×n</sub> 有秩 r ⇔ 存在 r 阶子式不为零、r+1 阶子式全为零。</li></ul><p>判定可逆的快捷法：对角占优（每行 |a<sub>ii</sub>|&gt;Σ<sub>j≠i</sub>|a<sub>ij</sub>|）⇒ 可逆。</p>'},
+'k-inertia':{ch:'c5',title:'对称矩阵的惯性',one:'合同变换下，正特征值个数和负特征值个数都不变——这就是“惯性”。',tags:['了解'],
+detail:'<p>实对称矩阵 A 合同于 diag(I<sub>p</sub>, −I<sub>q</sub>, 0)，(p,q) 称为<b>惯性指数</b>，由 A 唯一确定（Sylvester 惯性定理）。</p><ul><li>正定 ⇔ p=n（所有特征值&gt;0）；</li><li>判定正定的代数法：顺序主子式全&gt;0。</li></ul><p>与“不同基的度量矩阵合同”呼应：合同不变量是惯性指数，不是特征值本身。</p>'},
+'k-ginv':{ch:'c6',title:'广义逆与 {1}-逆',one:'不可逆的矩阵也有“假逆”，满足最弱一条方程的叫 {1}-逆。',tags:['判断','证明'],
+detail:'<p>X 是 A 的 {1}-逆 ⇔ AXA = A。</p><ul><li>任意矩阵都有 {1}-逆（总能构造）；</li><li><b>A 的 {1}-逆唯一 ⇔ A 是可逆方阵</b>（此时 {1}-逆 就是 A<sup>−1</sup>；资料判断 √、证明题）。</li></ul><p>用途：AX=b 相容时，x=Xb 是一个解（X 为任一 {1}-逆）。</p>'},
+'k-mp':{ch:'c6',title:'Moore–Penrose 逆 A⁺',one:'最出名的“真·伪逆”，四条条件唯一确定；用满秩分解一算就出。',tags:['计算','难点'],
+detail:'<p>A⁺ 是唯一满足以下四条矩阵：</p><ul><li>① AA⁺A=A；② A⁺AA⁺=A⁺；</li><li>③ (AA⁺)<sup>H</sup>=AA⁺；④ (A⁺A)<sup>H</sup>=A⁺A。</li></ul><p>满秩分解 A=FG 时：</p><div class="formula math">A⁺ = G⁺F⁺，G⁺=G<sup>H</sup>(GG<sup>H</sup>)<sup>−1</sup>，F⁺=(F<sup>H</sup>F)<sup>−1</sup>F<sup>H</sup></div><p>特例：A 列满秩 ⇒ A⁺=(A<sup>H</sup>A)<sup>−1</sup>A<sup>H</sup>；A 行满秩 ⇒ A⁺=A<sup>H</sup>(AA<sup>H</sup>)<sup>−1</sup>；A 可逆 ⇒ A⁺=A<sup>−1</sup>。</p>'},
+'k-leastsq':{ch:'c6',title:'极小范数解与最小二乘解',one:'解 Ax=b 时，“最短的解”或“最接近的解”都统一为 x = A⁺b。',tags:['计算','难点'],
+detail:'<p>无论 Ax=b 有没有解，x=A⁺b 都是“最好”的那个解：</p><ul><li>① 相容（有解）：全体解中范数最小的，叫<b>极小范数解</b>；</li><li>② 不相容：使 ||Ax−b|| 最小的解里范数最小的，叫<b>极小范数最小二乘解</b>。</li></ul><p><b>判定口诀：算 AA⁺b，等于 b 就是相容（极小范数解），不等于 b 就是不相容（极小范数最小二乘解）。</b></p><p>做题顺序：①满秩分解；②求 A⁺；③x=A⁺b；④用 AA⁺b 是否等于 b 判断类型。资料解答题 16 分题的标准流程。</p>'},
+'k-set':{ch:'c1',title:'数域、映射与线性相关性',one:'“数”的取值范围要先定好（数域）；一组向量能不能互相表示，由线性相关性管着。',tags:['基础','判断'],
+detail:'<p><b>数域 K：</b>对加、减、乘、除（分母不为 0）都封闭的数集，如 Q、R、C、Q(√2)。判定线性空间前先确认系数范围。</p><p><b>映射：</b>单射（不同原像不同像）、满射（像集=陪域）、双射（既单又满）。线性变换可逆 ⇔ 双射。</p><p><b>线性相关/无关：</b>x₁,…,xₘ 线性相关 ⇔ 存在不全为零的 kᵢ 使 Σkᵢxᵢ=0 ⇔ 其中某个向量可由其余向量线性表示；无关则反之（只有全零组合才得 0）。</p><p><b>最大线性无关组</b>的个数就是秩；向量组与其最大线性无关组等价。</p>'},
+'k-gen':{ch:'c1',title:'生成子空间、值域与零空间、直和',one:'由一组向量“生成”的子空间、矩阵的列空间与零空间，以及直和，是贯穿全书的四个子空间工具。',tags:['基础','填空'],
+detail:'<p><b>生成子空间：</b>L(x₁,…,xₘ)={Σkᵢxᵢ | kᵢ∈K}，最大线性无关组就是它的一组基。</p><p><b>矩阵值域（列空间）</b>R(A)=L(a₁,…,aₙ)={Ax | x∈ℝⁿ}⊂ℝᵐ；<b>零空间</b> N(A)={x | Ax=0}⊂ℝⁿ。</p><p><b>零度定理：</b>dim R(A)=rank A，dim N(A)=n−rank A（零度）。</p><p><b>直和：</b>V₁⊕V₂ ⇔ 任一向量分解唯一 ⇔ V₁∩V₂={0} ⇔ dim(V₁+V₂)=dimV₁+dimV₂。直和分解对应分块对角矩阵。</p><p><b>基的扩充定理：</b>子空间的基总可以补成整个空间的基。</p>'},
+'k-minpoly':{ch:'c1',title:'最小多项式',one:'比特征多项式更“省事”的零化多项式，算矩阵函数时用它把高次幂砍到只剩低次。',tags:['计算','难点'],
+detail:'<p>最小多项式 m(λ)：以 A 为根（m(A)=O）、首项系数 1、次数最低的多项式，唯一。</p><ul><li>m(λ) 整除特征多项式 φ(λ)，且与 φ(λ) 零点相同（不计重数）；</li><li>相似矩阵有相同的最小多项式（反之不成立）；</li><li>求法：φ(λ) 的因式逐个试，找次数最低且 A 满足的（例：A=[[3,−3,2],[−1,5,−2],[−1,3,0]]，φ(λ)=(λ−2)²(λ−4)，试 (λ−2)(λ−4) 得 m(λ)=λ²−6λ+8）。</li></ul><p><b>用途：</b>求 e^{tA}、f(A) 时，用 m(A)=0 把 A 的高次幂降为 I、A 的组合（待定系数法）。</p>'},
+'k-invsub':{ch:'c1',title:'不变子空间',one:'被线性变换“关在里面”的子空间——里面的向量变换后还在里面。',tags:['概念'],
+detail:'<p>V₁ 是 T 的不变子空间 ⇔ ∀x∈V₁，Tx∈V₁。</p><p>典型不变子空间：特征子空间 V_λ₀、值域 R(T)、核 N(T)、任何子空间对数乘变换。</p><p><b>分块对角定理：</b>若 V=V₁⊕…⊕Vₛ（每个 Vᵢ 是 T 的不变子空间），在合并基下 T 的矩阵为 A=diag(A₁,…,Aₛ)。这是“直和分解 ⇒ 分块对角化”的原理。</p>'},
+'k-euclid':{ch:'c1',title:'内积与欧氏空间',one:'给线性空间配上“角度与长度”的叫内积；有了它就能谈正交、正交基和正交变换。',tags:['核心','计算'],
+detail:'<p><b>内积四条公理：</b>交换 (x,y)=(y,x)、分配 (x,y+z)=(x,y)+(x,z)、齐次 (kx,y)=k(x,y)、非负 (x,x)≥0 且 =0 ⇔ x=0。</p><p><b>度量矩阵（Gram）：</b>G=(gᵢⱼ)=(xᵢ,xⱼ) 对称正定；(x,y)=ξᵀGη；换基时 G′=CᵀGC（合同），内积值不变。</p><p><b>长度与夹角：</b>||x||=√(x,x)；柯西–布涅柯夫斯基不等式 |(x,y)|≤||x||·||y||，等号 ⇔ 线性相关。</p><p><b>标准正交基：</b>度量矩阵=I；Schmidt 正交化把任意基变成正交基再单位化。</p><p><b>正交补：</b>V=V₁⊕V₁⊥；<b>R(A)⊥=N(Aᵀ)</b>（解 Ax=0 就是找 R(Aᵀ) 的正交补）。</p><p><b>正交变换/正交矩阵：</b>保持内积（长度）；标准正交基下矩阵 Q 满足 QᵀQ=I；实对称矩阵可正交相似对角化。</p>'},
+'k-unitary':{ch:'c1',title:'酉空间与正规矩阵',one:'把“长度夹角”搬到复数上就是酉空间；能“酉对角化”的矩阵叫正规矩阵。',tags:['核心','判断'],
+detail:'<p><b>酉空间：</b>内积 (x,y)=Σξ̄η=xᴴy；长度 ||x||₂；Schmidt 正交化照常。</p><p><b>酉变换/酉矩阵：</b>(Tx,Ty)=(x,y)；标准正交基下 AᴴA=AAᴴ=I。Hermite 变换 ⇔ Aᴴ=A（Hermite 矩阵），其特征值全是实数、不同特征值特征向量正交。</p><p><b>Schur 引理：</b>任何复矩阵可酉相似于上三角矩阵（实矩阵、实特征值时正交相似）。</p><p><b>正规矩阵：</b>AᴴA=AAᴴ ⇔ 酉相似于对角矩阵（例：Hermite、酉阵、正交阵、实对称、对角阵皆正规）。</p><p><b>谱分解：</b>Hermite 矩阵 A=Σλᵢpᵢpᵢᴴ，其中 pᵢ 是单位特征向量，pᵢpᵢᴴ 为秩 1 投影，线性无关。</p>'},
+'k-equv':{ch:'c2',title:'范数的等价性与向量序列极限',one:'有限维空间里所有范数都是“同一把尺子”（可互相换算）；收敛性由范数完全刻画。',tags:['证明'],
+detail:'<p><b>等价：</b>两种范数 ||·||_α、||·||_β 等价 ⇔ 存在 c₁,c₂&gt;0 使 c₁||x||_β ≤ ||x||_α ≤ c₂||x||_β。等价是等价关系。</p><p><b>定理：有限维线性空间上任意两种向量范数等价。</b>证明思路：归结为与 2-范数比，用有界闭集上连续函数取最值。</p><p>常用换算（Cⁿ）：||x||_∞ ≤ ||x||₁ ≤ n||x||_∞；||x||_∞ ≤ ||x||₂ ≤ √n||x||_∞；||x||₂/√n ≤ ||x||₁ ≤ n||x||₂。</p><p><b>向量序列收敛：</b>x^{(k)}→x ⇔ 每个分量收敛 ⇔ 对任一范数 ||x^{(k)}−x||→0。</p><p>ℓ_p 范数：||x||_p=(Σ|ξᵢ|ᵖ)^{1/p}（Hölder 不等式证三角不等式）；||x||_∞=lim_{p→∞}||x||_p；加权范数 ||x||_A=√(xᵀAx)（A 对称正定）。</p>'},
+'k-cond':{ch:'c2',title:'条件数与矩阵摄动',one:'解方程时，输入的小误差会被放大多少倍？条件数就是放大倍数的上限。',tags:['应用','填空'],
+detail:'<p><b>可逆性判据：</b>||A||&lt;1 ⇒ I−A 可逆，且 ||(I−A)⁻¹|| ≤ ||I||/(1−||A||)。</p><p><b>逆矩阵摄动：</b>A 可逆、||A⁻¹δA||&lt;1 时，A+δA 可逆，且相对误差 ≤ d_a·cond(A)/(1−d_a·cond(A))，其中 d_a=||δA||/||A||。</p><p><b>条件数：</b>cond(A)=||A||·||A⁻¹||（依赖所选范数；cond₂(A)=σ_max/σ_min）。条件数越大，矩阵越“病态”，解的误差越容易被放大。</p><p>用途：判断数值计算稳定性、选范数估计误差。资料填空常考 cond(A)=||A||·||A⁻¹||。</p>'},
+'k-mfunc':{ch:'c3',title:'矩阵函数值的求法',one:'算 e^A、cosA 这类矩阵函数，不用真去加无穷级数：用“降幂 + 待定系数”两步就够。',tags:['计算','难点'],
+detail:'<p>四种方法（按矩阵类型选）：</p><ul><li><b>待定系数法：</b>取 ψ(λ)=最小（特征）多项式，f(A)=r(A)=b₀I+b₁A+…+b_{m−1}A^{m−1}；系数由 f、f′、… 在特征值处的值联立解出；</li><li><b>数项级数求和法：</b>用 ψ(A)=O 把 A^{m+ℓ} 循环降幂，再合并级数系数；</li><li><b>对角形法：</b>A=PΛP⁻¹ ⇒ f(A)=P·diag(f(λᵢ))·P⁻¹；</li><li><b>Jordan 形法：</b>f(Jᵢ) 为上三角，第 k 条副对角线是 f^{(k)}(λᵢ)/k!。</li></ul><p>例：A=[[4,6,0],[−3,−5,0],[−3,−6,1]] 可对角化，P⁻¹AP=diag(−2,1,1)，cosA=P·diag(cos(−2),cos1,cos1)·P⁻¹。</p><p>矩阵函数另一定义（Jordan 型）：f(z) 在特征值处有足够阶导数即可定义 f(A)，与幂级数定义一致。</p>'},
+'k-mcalc':{ch:'c3',title:'矩阵的微分与积分',one:'矩阵逐元素求导、积分；最重要的是 e^{tA} 与三角函数的求导公式和函数对向量的梯度。',tags:['计算','应用'],
+detail:'<p><b>函数矩阵求导：</b>A′(t)=(a′ᵢⱼ(t))；法则：和、数乘、乘积 (AB)′=A′B+AB′。</p><p><b>关键公式：</b>(e^{tA})′=A e^{tA}=e^{tA}A；(cos tA)′=−A sin tA；(sin tA)′=A cos tA。</p><p><b>积分：</b>∫A(t)dt 逐元素积分；d/dt∫ₐᵗ A(s)ds=A(t)；∫A′(t)dt=A(t₁)−A(t₀)。</p><p><b>函数对向量/矩阵的导数：</b>f(x)=xᵀAx ⇒ df/dx=(A+Aᵀ)x（A 对称时 =2Ax）；d(Ax)/dxᵀ=A。</p><p>应用：最小二乘（令 ||Ax−b||² 导数为 0 ⇒ 法方程）、矩阵微分方程组。</p>'},
+'k-house':{ch:'c4',title:'Householder 反射与 QR 分解',one:'用一个“镜面反射”把向量的某部分一次性清零，是数值计算里最稳的 QR 分解法。',tags:['计算','判断'],
+detail:'<p><b>Householder 矩阵：</b>H=I−2uuᴴ（u 单位向量），性质：对称、正交、对合（H²=I）、自逆、det H=−1。</p><p><b>作用：</b>对任意 x≠0，可取 u=(x−||x||e₁)/||x−||x||e₁|| 使 Hx=||x||e₁（把第一分量以外清零）。</p><p><b>与 Givens 的关系：</b>初等旋转 = 两个初等反射之积（T=H_vH_u）；反之反射不能写成旋转之积（行列式 −1 vs +1）。</p><p><b>QR 分解的反射法：</b>依次用 H₁,H₂,… 把 A 的每列下方清零成上三角 R，Q=H₁H₂…Hₖ 的共轭转置（正交）。与施密特、Givens 法结果差一个“符号因子”。</p>'},
+'k-eigbound':{ch:'c5',title:'特征值的界与对角占优',one:'不打开矩阵也能把特征值圈起来：模、实部、虚部、乘积都有不等式管着。',tags:['判断','应用'],
+detail:'<p><b>模与分部界（定理 5.1/5.2）：</b>对特征值 λ：|λ|≤||A||_{m∞}；|Re λ|≤½||A+Aᴴ||_{m∞}；|Im λ|≤½||A−Aᴴ||_{m∞}，且 |Im λ|≤M√(n(n−1)/2)，M=½max|a_rs−a_sr|。</p><p><b>Schur 不等式：</b>Σ|λᵢ|² ≤ ||A||_F²，等号 ⇔ A 正规（AᴴA=AAᴴ）。</p><p><b>Hadamard 不等式：</b>|det A|=Π|λᵢ| ≤ ||a₁||₂…||aₙ||₂（列长之积）。</p><p><b>对角占优：</b>按行（严格）对角占优 |a_rr|&gt;Σ_{s≠r}|a_rs| ⇒ det A≠0 且 |λᵢ| 有上下界（定理 5.3）。</p><p>推论：Hermite 矩阵特征值全实；反 Hermite 矩阵特征值纯虚或 0。</p>'},
+'k-rayleigh':{ch:'c5',title:'Rayleigh 商与特征值的极性',one:'实对称矩阵的最大/最小特征值，正好是 Rayleigh 商的最大/最小值——用变分眼光看特征值。',tags:['概念','判断'],
+detail:'<p><b>Rayleigh 商：</b>R(x)=xᵀAx/xᵀx（x≠0，A 实对称）。</p><p><b>极性定理：</b>min R(x)=λ₁、max R(x)=λₙ（λ₁≤…≤λₙ），取极值的点是相应特征向量（可在单位球面 ||x||₂=1 上讨论）。</p><p><b>Courant–Fischer（极小极大）：</b>λₖ = min_{dimVₖ=k} max_{x∈Vₖ,||x||=1} xᵀAx。</p><p><b>广义特征值问题：</b>Ax=λBx（A 对称、B 对称正定）；广义 Rayleigh 商 R(x)=xᵀAx/xᵀBx；按 B 正交 xᵢᵀBxⱼ=0；极小极大原理同样成立（λₖ=min max R(x)）。</p><p>奇异值也有极小极大形式：σₖ=min max ||Ax||/||x||。</p>'},
+'k-mateq':{ch:'c5',title:'线性矩阵方程与行拉直',one:'矩阵方程 AX+XB=F 看着吓人，用“行拉直 + Kronecker 积”就变成普通线性方程组。',tags:['难点','计算'],
+detail:'<p><b>行拉直：</b>vec(X)=(x₁,…,x_p)ᵀ（把 X 的行依次竖排）。关键公式：vec(AXB)=(A⊗Bᵀ)vec(X)。</p><p><b>方程 AX+XB=F：</b>等价于 (A⊗Iₙ+Iₘ⊗Bᵀ)vec(X)=vec(F)。有唯一解 ⇔ λᵢ(A)+μⱼ(B)≠0（对一切 i,j）。</p><p>一般式 ΣAᵢXBᵢ=F 有解 ⇔ vec(F)∈R(ΣAᵢ⊗Bᵢᵀ)。</p><p><b>矩阵函数解法：</b>A、B 特征值实部全负时，AX+XB=F 唯一解 X=−∫₀^∞ e^{At}Fe^{Bt}dt。</p><p><b>矩阵微分方程：</b>dX/dt=AX+XB，X(0)=X₀ ⇒ X(t)=e^{At}X₀e^{Bt}（性质 e^{A⊗I+I⊗B}=e^A⊗e^B）。</p><p>推论：AX−XA=O 恒有非零解；A 与 B 无公共特征值 ⇒ [[A,F],[O,B]]~diag(A,B)。</p>'},
+'k-proj':{ch:'c6',title:'投影矩阵与正交投影',one:'把一个向量“拍”到某个子空间上；幂等矩阵就是投影，加 Hermite 条件就是正交投影。',tags:['概念','计算'],
+detail:'<p><b>投影变换：</b>Cⁿ=L⊕M，x=y+z（y∈L，z∈M），T_{L,M}x=y。值域 L、核 M。</p><p><b>投影矩阵：</b>P 是投影矩阵 ⇔ P²=P（幂等）。取 L 基 X、M 基 Y：P_{L,M}=(X,O)(X,Y)⁻¹，与基选取无关。</p><p><b>正交投影：</b>P 正交投影 ⇔ P 幂等且 Hermite（Pᴴ=P）。沿 L⊥ 到 L 的投影。</p><p><b>正交投影矩阵公式：</b>P_L=X(XᴴX)⁻¹Xᴴ（X 为 L 的基列矩阵）。例：L=L((1,2,0),(0,1,1)) ⇒ P_L=⅙[2 2 −2; 2 5 1; −2 1 5]。</p><p><b>与伪逆的桥梁：</b>A⁺ 等价定义：AX=P_{R(A)}（A 的列空间上的正交投影），XA=P_{R(X)}。</p>'},
+'k0-field':{ch:'c0',title:'数域',one:'“数域”就是一堆数，加减乘除随便做都还在这堆数里，比如有理数 Q、实数 R、复数 C。',tags:['基础','概念'],
+detail:'<p><b>定义：</b>数域 F 是至少含两个数的数集，对四则运算（加、减、乘、除，除数不为 0）封闭。常用：Q（有理数）、R（实数）、C（复数）。</p><p><b>为什么重要：</b>线性空间、线性变换都在“某个数域”上讨论；矩阵论里默认在 C 上（允许复数元素和复数特征值）。</p><p><b>小例子：</b>整数集 Z 不是数域（1÷2=½∉Z）；有理数 Q 是数域（分数四则运算仍是分数）。</p><p class="sub">来源：华东师大《第一讲 预备知识：线性代数基础》<a href="https://math.ecnu.edu.cn/jypan/Teaching/MC/slides_MC01_la.pdf" target="_blank" rel="noopener">slides_MC01_la.pdf</a></p>'},
+'k0-mat':{ch:'c0',title:'矩阵与矩阵运算',one:'矩阵就是一张“数字表格”，横排叫行、竖排叫列；矩阵乘法是“行乘列、求和”，不是逐项相乘。',tags:['基础','计算'],
+detail:'<p><b>定义：</b>把 m×n 个数 aᵢⱼ 排成 m 行 n 列的矩形数表，称 m×n 矩阵，记 A=(aᵢⱼ)，aᵢⱼ 是第 i 行第 j 列的元素。m=n 时叫方阵。</p><p><b>基本运算：</b>加法（同型逐元素加）、数乘（每个元素乘 k）、乘法（A(m×p)·B(p×n)=C(m×n)，cᵢⱼ=Σₖaᵢₖbₖⱼ）。</p><p><b>特殊矩阵：</b>单位阵 I（对角元全 1）、零矩阵 O、对角阵 diag(d₁,…,dₙ)、上三角阵。</p><p><b>转置：</b>(Aᵀ)ᵢⱼ=aⱼᵢ；(AB)ᵀ=BᵀAᵀ。复数矩阵还要会共轭转置 Aᴴ=(Ā)ᵀ。</p><p><b>注意：</b>矩阵乘法一般不交换（AB≠BA），但结合律成立。矩阵可看作线性映射的“表格”。</p><p class="sub">来源：清华大学出版社《矩阵概念》<a href="https://www.tup.tsinghua.edu.cn/upload/books/yz/045278-01.txt" target="_blank" rel="noopener">045278-01</a>；Study.com《Vectors and Matrices》<a href="https://study.com/academy/lesson/vectors-and-matrices.html" target="_blank" rel="noopener">原文</a></p>'},
+'k0-vec':{ch:'c0',title:'向量与向量的运算',one:'向量是一串有序数字（行/列排列），可以加、可以乘数；几何上它带方向和大小。',tags:['基础','概念'],
+detail:'<p><b>定义：</b>n 维向量是 n 个有序数组成的数组：列向量 x=(ξ₁,…,ξₙ)ᵀ 或行向量。几何上表示“从原点出发的箭头”。</p><p><b>运算：</b>加法（对应分量相加）、数乘（每个分量乘 k）。</p><p><b>线性组合：</b>k₁α₁+…+kₘαₘ 叫 α₁,…,αₘ 的线性组合；系数不全为 0 而组合为 0，则称这组向量线性相关，否则线性无关。</p><p><b>与矩阵的关系：</b>矩阵是“向量的集合”：A 的每一列是一个列向量；矩阵乘法 Ax 就是把 x 映到 A 列向量的线性组合。</p><p class="sub">来源：Study.com《Vectors and Matrices》<a href="https://study.com/academy/lesson/vectors-and-matrices.html" target="_blank" rel="noopener">原文</a></p>'},
+'k0-solve':{ch:'c0',title:'线性方程组与高斯消元',one:'线性方程组就是一串“未知数的一次方程”放一起；高斯消元就是小学“加减消元”的机械化版本。',tags:['基础','计算'],
+detail:'<p><b>标准形式：</b>Ax=b，A 是系数矩阵、x 是未知数向量、b 是常数向量。</p><p><b>高斯消元：</b>对增广矩阵 (A|b) 做初等行变换（交换两行、某行乘非零数、某行加另一行的倍数），化成行阶梯形，再回代求解。</p><p><b>解的结构：</b>唯一解 / 无解（出现 0=非零数）/ 无穷多解（自由变量）；秩判据：rank(A|b)&gt;rank(A) 无解；rank(A|b)=rank(A)=n 唯一解；=r&lt;n 无穷多解（n−r 个自由变量）。</p><p><b>齐次方程组：</b>Ax=0 恒有零解；非零解 ⇔ rank A&lt;n ⇔ det A=0。</p><p class="sub">来源：华东师大《预备知识：线性代数基础》<a href="https://math.ecnu.edu.cn/jypan/Teaching/MC/slides_MC01_la.pdf" target="_blank" rel="noopener">slides_MC01_la.pdf</a></p>'},
+'k0-rank':{ch:'c0',title:'矩阵的秩',one:'秩就是矩阵里“真正独立”的行（或列）的个数，也是列空间（值域）的维数。',tags:['基础','概念'],
+detail:'<p><b>定义：</b>矩阵 A 的秩 rank(A) = 线性无关的行向量的最大个数 = 线性无关的列向量的最大个数 = 行阶梯形非零行个数 = dim R(A)（列空间维数）。</p><p><b>性质：</b>rank(Aᵀ)=rank(A)；rank(AB)≤min(rankA,rankB)；rank(A+B)≤rankA+rankB；n 阶方阵 A 满秩 ⇔ det A≠0 ⇔ A 可逆。</p><p><b>怎么算：</b>高斯消元化成行阶梯形，数非零行个数。</p><p class="sub">来源：华东师大《预备知识：线性代数基础》<a href="https://math.ecnu.edu.cn/jypan/Teaching/MC/slides_MC01_la.pdf" target="_blank" rel="noopener">slides_MC01_la.pdf</a></p>'},
+'k0-inv':{ch:'c0',title:'逆矩阵',one:'逆矩阵是“矩阵的倒数”：A⁻¹ 和 A 相乘等于单位阵。存在条件就一条：行列式不为 0。',tags:['基础','计算'],
+detail:'<p><b>定义：</b>A 的逆矩阵 A⁻¹ 满足 AA⁻¹=A⁻¹A=I。</p><p><b>存在条件（三条等价）：</b>① 存在 A⁻¹；② det(A)≠0；③ rank(A)=n（满秩）。</p><p><b>计算：</b>2 阶：A⁻¹=1/(ad−bc)·[d −b; −c a]；高阶用伴随矩阵或初等行变换 (A|I)→(I|A⁻¹)。</p><p><b>性质：</b>(AB)⁻¹=B⁻¹A⁻¹；(Aᵀ)⁻¹=(A⁻¹)ᵀ；det(A⁻¹)=1/det A。</p><p class="sub">来源：清华大学出版社《逆矩阵的存在条件》<a href="https://www.tup.tsinghua.edu.cn/upload/books/yz/086304-01.txt" target="_blank" rel="noopener">086304-01</a></p>'},
+'k0-inner':{ch:'c0',title:'内积与正交',one:'内积就是“点乘”：把两个向量对应分量相乘再相加，结果是一个数；结果为 0 就说两个向量正交（垂直）。',tags:['基础','概念'],
+detail:'<p><b>欧氏内积：</b>⟨x,y⟩=xᵀy=Σξᵢηᵢ（实数）；酉内积：⟨x,y⟩=xᴴy=Σξ̄ᵢηᵢ（复数，对第一个变量共轭）。</p><p><b>性质：</b>对称/共轭对称、线性、正定（⟨x,x⟩≥0，等号仅 x=0）。</p><p><b>正交：</b>⟨x,y⟩=0 称 x⊥y；两两正交且每个非零的向量组必线性无关；标准正交基：两两正交且长度为 1 的基。</p><p><b>长度与夹角：</b>||x||₂=√⟨x,x⟩；cosθ=⟨x,y⟩/(||x||·||y||)。</p><p class="sub">来源：USC《Some basic definitions from linear algebra》<a href="https://dornsife.usc.edu/sergey-lototsky/wp-content/uploads/sites/211/2023/12/LinAlgebra-basic.pdf" target="_blank" rel="noopener">LinAlgebra-basic.pdf</a></p>'},
+'k0-eig':{ch:'c0',title:'特征值与特征向量',one:'特征向量是“方向不变、只被拉伸”的向量：Ax=λx；λ 是拉伸倍数，叫特征值。',tags:['基础','概念'],
+detail:'<p><b>定义：</b>x≠0 且 Ax=λx，则 λ 是 A 的特征值，x 是 λ 对应的特征向量。</p><p><b>求法：</b>① 解特征方程 det(λI−A)=0 得特征值；② 对每个 λ 解 (λI−A)x=0 得特征向量。</p><p><b>重要事实：</b>det A=Πλᵢ（特征值之积），tr A=Σλᵢ（特征值之和）；相似矩阵特征值相同。</p><p><b>对角化：</b>A 有 n 个线性无关特征向量时，A=PΛP⁻¹（Λ 为对角特征值阵）。</p><p class="sub">来源：UW–Madison《Math 519 glossary》<a href="https://people.math.wisc.edu/~angenent/519.2016s/notes/matrixalgebraglossary.html" target="_blank" rel="noopener">matrixalgebraglossary</a></p>'},
+'k0-form2':{ch:'c0',title:'二次型',one:'二次型就是“每个未知数都带平方或两两相乘”的式子，写成矩阵就是 xᵀAx。',tags:['基础','概念'],
+detail:'<p><b>定义：</b>n 元二次齐次多项式 f=Σᵢⱼ aᵢⱼξᵢξⱼ（aᵢⱼ=aⱼᵢ）可唯一写成 f=xᵀAx，A 为对称矩阵，称为二次型的矩阵。</p><p><b>标准形：</b>通过可逆线性变换 x=Py 化 f=Σdᵢηᵢ²（对角形），再归一化得规范形（系数 1、−1、0 的个数称为正/负惯性指数）。</p><p><b>正定：</b>对一切 x≠0 有 xᵀAx&gt;0 ⇔ 所有顺序主子式 &gt;0（对称正定矩阵）。</p><p><b>用途：</b>矩阵论里加权范数 ||x||_A=√(xᵀAx)（A 对称正定）、二次型对向量求导 df/dx=2Ax 都从这里来。</p><p class="sub">来源：科普中国《线性代数》<a href="https://cloud.kepuchina.cn/h5/detail?id=6972628183801028608" target="_blank" rel="noopener">图文详情</a>；清华大学出版社《线性代数》<a href="https://www.tup.tsinghua.edu.cn/upload/books/yz/021184-01.txt" target="_blank" rel="noopener">021184-01</a></p>'}
+};
+
+// ============ 例题库（16 例：自动演示 3 + 分步讲解 13） ============
+const EXAMPLES={
+'ex-det':{ch:'c0',title:'行列式按第一行展开',source:'方法来自资料·判断题/解答题通用',type:'auto',kind:'行列式',
+desc:'三步学会“按第一行展开”：写出展开式 → 分别算 2 阶子式 → 求和。还可以切换到“按其他行/列展开”或“化为上三角”对比。',
+preset:{mat:[[2,1,0],[1,2,1],[0,1,2]],tool:'det'}},
+'ex-charpoly':{ch:'c1',title:'特征多项式 det(λI−A)',source:'资料·填空/解答高频',type:'auto',kind:'特征多项式',
+desc:'先拼出 λI−A，再按第一行展开成 λ 的多项式，最后验证 Cayley–Hamilton：f(A)=O。',
+preset:{mat:[[1,2,0],[0,2,0],[-2,-1,-1]],tool:'charpoly'}},
+'ex-gauss':{ch:'c4',title:'行变换：化为行最简形',source:'资料·满秩分解同款矩阵',type:'auto',kind:'行变换',
+desc:'一步步做高斯消元（选主元、交换、消元），每一步都说明为什么这么做；最后还能看秩与行最简形。',
+preset:{mat:[[1,1,1,1],[1,2,3,4],[0,1,2,3]],tool:'gauss'}},
+'ex-converge':{ch:'c2',title:'判断收敛矩阵并求和 ∑Aᵏ',source:'资料·解答题（汇总 P.17）',type:'guide',kind:'范数',
+desc:'A=[0.1 0.3; 0.7 0.6]，先判收敛，再算矩阵幂级数和。',
+steps:[
+{t:'先判收敛：找一种好算的范数',body:'取列和范数：第 1 列绝对值之和 = 0.1+0.7 = 0.8；第 2 列 = 0.3+0.6 = 0.9。<br>所以 ||A||<sub>1</sub> = max(0.8, 0.9) = <b>0.9</b>。',
+why:'为什么用范数判收敛？因为 ρ(A) ≤ ||A||，只要找到一种范数 ||A||&lt;1，就立刻推出谱半径&lt;1 ⇒ 收敛。比直接解特征方程省事。'},
+{t:'下结论：A 是收敛矩阵',body:'0.9 &lt; 1 ⇒ A 收敛（A<sup>k</sup> → O）。',
+why:'收敛矩阵的定义就是 A<sup>k</sup>→O，充要条件 ρ(A)&lt;1；这里用“存在范数&lt;1”这个充分条件就够了。'},
+{t:'套级数和公式',body:'当 A 收敛时，Σ<sub>k=0</sub><sup>∞</sup>A<sup>k</sup> = (I−A)<sup>−1</sup>。<br>I−A = [0.9 −0.3; −0.7 0.4]',
+why:'Neumann 级数公式：因为 (I−A)(I+A+…+A<sup>m</sup>) = I−A<sup>m+1</sup>，A<sup>m+1</sup>→O，所以和就是 (I−A)<sup>−1</sup>。'},
+{t:'求逆（2 阶公式）',body:'det(I−A) = 0.9×0.4 − (−0.3)×(−0.7) = 0.36−0.21 = 0.15 = 3/20。<br>(I−A)<sup>−1</sup> = (20/3)·[0.4 0.3; 0.7 0.9] = [8/3 2; 14/3 6]。',
+why:'2 阶矩阵求逆直接用公式 (1/det)[d −b; −c a]，把分母 0.15 换成 3/20 再乘进去，避免小数误差。'},
+{t:'写出答案',body:'Σ<sub>k=0</sub><sup>∞</sup> A<sup>k</sup> = [8/3 2; 14/3 6]。',
+why:'步骤①②③④是一条完整答题链：判收敛 → 引公式 → 求逆 → 给结果。考试按这个顺序写不丢分。'}
+]},
+'ex-exp':{ch:'c3',title:'求矩阵指数 e^{tA}',source:'资料·解答题（汇总 P.18）同款 A',type:'guide',kind:'矩阵分析',
+desc:'A=[2 0 0; 1 1 1; 1 −1 3]，特征值三重 2，走 Jordan 路线求 e^{tA}。',
+steps:[
+{t:'求特征多项式',body:'det(λI−A) = (λ−2)[(λ−1)(λ−3)+1] = (λ−2)(λ²−4λ+4) = <b>(λ−2)³</b>。<br>特征值：λ=2（代数重数 3）。',
+why:'先算特征值，决定走对角化还是 Jordan 路线。三重根且几何重数不够 3，就不能对角化，必须用 Jordan 形。'},
+{t:'判断 Jordan 结构',body:'A−2I = [0 0 0; 1 −1 1; 1 −1 1]，秩 = 1。<br>几何重数 = 3 − rank(A−2I) = 2 &lt; 3 ⇒ 有一个 2 阶 Jordan 块 + 一个 1 阶块。<br>J = [2 1 0; 0 2 0; 0 0 2]。',
+why:'几何重数 = n − rank(A−λI)。几何重数比代数重数少几，就缺几个 1，Jordan 块就这样拼出来。'},
+{t:'找相似矩阵 P',body:'取 v<sub>2</sub>=(0,1,1)（在值域里），v=(1,0,0)（满足 (A−2I)v=v<sub>2</sub>），v<sub>3</sub>=(1,1,0)（另一零空间向量）。<br>P = [v<sub>2</sub> v v<sub>3</sub>] = [0 1 1; 1 0 1; 1 0 0]。',
+why:'Jordan 链构造：先找“被 (A−2I) 打到非零”的向量 v，它的像就是链上第二个向量 v<sub>2</sub>，再补一个独立的零空间向量。'},
+{t:'写 e^{Jt}',body:'对 Jordan 块 [2 1; 0 2]：e^{Jt} = e^{2t}[1 t; 0 1]。<br>e^{Jt} = [e^{2t} t·e^{2t} 0; 0 e^{2t} 0; 0 0 e^{2t}]。',
+why:'Jordan 块的矩阵指数有公式：J=λI+N（N 幂零），e^{Jt}=e^{λt}(I+tN+t²N²/2!+…)，N²=0 所以只到一次项。'},
+{t:'代回 e^{tA}=P·e^{Jt}·P⁻¹',body:'算出（逐项代入并化简）：<br>e^{tA} = [e^{2t} 0 0; t·e^{2t} (1−t)e^{2t} t·e^{2t}; t·e^{2t} −t·e^{2t} (1+t)e^{2t}]。',
+why:'矩阵指数在相似变换下“传递”：e^{PJP⁻¹t}=P e^{Jt} P⁻¹。化简时耐心做矩阵乘法即可。'},
+{t:'验算',body:'t=0 时矩阵应等于 I：代入得 [1 0 0; 0 1 0; 0 0 1] ✓。<br>对 t 求导再令 t=0 应等于 A ✓（(d/dt e^{At})|₀ = A）。',
+why:'两步验算能抓住 95% 的手滑错误：初值 I 检查“有没有算成别的”，导数检查“指数对不对”。'}
+]},
+'ex-trig':{ch:'c3',title:'由 sin(At) 反求矩阵 A',source:'资料·解答题（汇总 P.19）',type:'guide',kind:'矩阵分析',
+desc:'已知 sin(At) 的矩阵表达式，反求 A。核心：A = (d/dt sin At)|_{t=0}。',
+steps:[
+{t:'背出黄金公式',body:'对任意矩阵 A：d/dt sin(At) = A·cos(At)。<br>令 t=0：cos(0)=I ⇒ <b>A = (d/dt sin At)|<sub>t=0</sub></b>。',
+why:'矩阵函数对 t 求导满足链式法则（A 与自身可交换），这是“反求 A”类题的统一钥匙。'},
+{t:'逐项对 t 求导',body:'sin(At) 的每个元素都是 sin(kt)、sin t 的组合。求导规则：<br>d/dt sin(kt) = k·cos(kt)，令 t=0 得 <b>k</b>；d/dt sin t = cos t，令 t=0 得 <b>1</b>。<br>所以元素 a<sub>ij</sub> = 2×(sin2t 的系数) + 1×(sin t 的系数)。',
+why:'不用真的展开 sin(At)，只用“导数在 0 点的值”把每个位置还原成数——这正是导数的定义作用。'},
+{t:'代入数据',body:'第一行：(2+1, 4+1, 6+1) = (3,5,7)<br>第二行：(2+2, 4+2, 6+2) = (4,6,8)<br>第三行：(2+3, 4+3, 6+3) = (5,7,9)',
+why:'每个元素 = sin2t 的系数×2 + sin t 的系数×1，一行一行抄清楚，别串行。'},
+{t:'写出答案并验算',body:'A = [3 5 7; 4 6 8; 5 7 9]。<br>验算：把 A 代回 sin(At)=Σ(−1)ᵏ(At)²ᵏ⁺¹/(2k+1)!，或用导数法再求一次应还原原式。',
+why:'矩阵函数类题，答案写成矩阵后建议用“t 很小的数值代入”或“再求导”自检一遍。'}
+]},
+'ex-qr':{ch:'c4',title:'QR 分解（Gram–Schmidt 法）',source:'资料·解答题（汇总 P.16）同款 A',type:'guide',kind:'分解',
+desc:'A=[0 1 1; 1 1 0; 1 0 1]，用施密特正交化求 QR。',
+steps:[
+{t:'取列向量',body:'a<sub>1</sub>=(0,1,1)，a<sub>2</sub>=(1,1,0)，a<sub>3</sub>=(1,0,1)。',
+why:'QR 分解的对象是列向量组；Q 的列就是它们正交化、单位化后的结果。'},
+{t:'第 1 列：直接单位化',body:'q<sub>1</sub> = a<sub>1</sub>/||a<sub>1</sub>|| = (0,1,1)/√2。<br>r<sub>11</sub> = ||a<sub>1</sub>|| = √2。',
+why:'第一列没有前面的向量要减，直接归一化；r<sub>11</sub> 就是它的长度。'},
+{t:'第 2 列：减去在 q1 上的投影',body:'u<sub>2</sub> = a<sub>2</sub> − (a<sub>2</sub>·q<sub>1</sub>)q<sub>1</sub>，其中 a<sub>2</sub>·q<sub>1</sub> = 1/√2。<br>u<sub>2</sub> = (1,1,0) − (0,1/2,1/2) = (1, 1/2, −1/2)。<br>q<sub>2</sub> = u<sub>2</sub>/||u<sub>2</sub>|| = (1,1/2,−1/2)/(√6/2) = (2/√6, 1/√6, −1/√6)。<br>r<sub>12</sub> = a<sub>2</sub>·q<sub>1</sub> = 1/√2；r<sub>22</sub> = ||u<sub>2</sub>|| = √6/2。',
+why:'施密特的核心：把 a<sub>2</sub> 拆成“平行于 q<sub>1</sub> 的部分 + 垂直于 q<sub>1</sub> 的部分”，垂直部分就是 u<sub>2</sub>。平行系数 r<sub>12</sub> 留在 R 的上三角。'},
+{t:'第 3 列：减去在前两个方向上的投影',body:'u<sub>3</sub> = a<sub>3</sub> − (a<sub>3</sub>·q<sub>1</sub>)q<sub>1</sub> − (a<sub>3</sub>·q<sub>2</sub>)q<sub>2</sub>。<br>a<sub>3</sub>·q<sub>1</sub> = 1/√2，a<sub>3</sub>·q<sub>2</sub> = 1/√6。<br>u<sub>3</sub> = (2/3, −2/3, 2/3)，q<sub>3</sub> = (1/√3, −1/√3, 1/√3)。<br>r<sub>13</sub> = 1/√2，r<sub>23</sub> = 1/√6，r<sub>33</sub> = ||u<sub>3</sub>|| = 2/√3。',
+why:'每多一列就多减一个投影：u<sub>k</sub> 与前面所有 q<sub>i</sub> 都正交，所以 Q 的列两两正交。'},
+{t:'拼出 Q 和 R，验算',body:'Q = [0 2/√6 1/√3; 1/√2 1/√6 −1/√3; 1/√2 −1/√6 1/√3]，<br>R = [√2 1/√2 1/√2; 0 √6/2 1/√6; 0 0 2/√3]。<br>验算：Q<sup>T</sup>Q = I，且 QR = A。',
+why:'Q 的列两两正交单位化 ⇒ Q<sup>T</sup>Q=I；R 的对角元是各步长度，上三角是投影系数。验算 Q<sup>T</sup>Q=I 和 QR=A 一步都不能少。'}
+]},
+'ex-pseudo':{ch:'c6',title:'满秩分解 → 伪逆 → 极小范数解',source:'改编自资料·解答题（汇总 P.15 方法同款）',type:'guide',kind:'广义逆',
+desc:'A=[1 0; 0 1; 1 1]（3×2 列满秩），b=(1,2,3)。求 A⁺ 与 Ax=b 的最优解并判定类型。',
+steps:[
+{t:'判定秩、做满秩分解',body:'A 的 1、2 列线性无关 ⇒ rank=2=列数 ⇒ <b>列满秩</b>。<br>取 F=A（3×2 列满秩），G=I<sub>2</sub>（2×2 行满秩），则 A=F·G。',
+why:'满秩分解 A=FG 不唯一，但取“F=A、G=I”在列满秩时最省事。列满秩时 G 可以选成单位阵，因为 A=A·I。'},
+{t:'求 F⁺（列满秩公式）',body:'F⁺ = (F<sup>T</sup>F)<sup>−1</sup>F<sup>T</sup>。<br>F<sup>T</sup>F = [2 1; 1 2]，(F<sup>T</sup>F)<sup>−1</sup> = (1/3)[2 −1; −1 2]。<br>F⁺ = (1/3)[2 −1; −1 2]·[1 0 1; 0 1 1] = (1/3)[2 −1 1; −1 2 1]。',
+why:'列满秩时 F⁺=(F<sup>H</sup>F)<sup>−1</sup>F<sup>H</sup>：F<sup>H</sup>F 是 r×r 可逆阵，公式直接可用。'},
+{t:'求 A⁺',body:'G=I<sub>2</sub> 可逆 ⇒ G⁺ = G<sup>−1</sup> = I<sub>2</sub>。<br>A⁺ = G⁺F⁺ = F⁺ = (1/3)[2 −1 1; −1 2 1]。',
+why:'满秩分解公式：A⁺=G⁺F⁺。G 是单位阵时它的伪逆就是它自己，省一步。'},
+{t:'算最优解 x=A⁺b',body:'x = A⁺b = (1/3)[2 −1 1; −1 2 1]·(1,2,3) = (1/3)(2−2+3, −1+4+3) = <b>(1, 2)</b>。',
+why:'无论相容与否，x=A⁺b 都是“范数最小的（最小二乘）解”，这是 Moore–Penrose 逆的核心性质。'},
+{t:'判定解的类型',body:'AA⁺ = [1 0; 0 1; 1 1]·(1/3)[2 −1 1; −1 2 1] = (1/3)[2 −1 1; −1 2 1; 1 1 2]。<br>AA⁺b = (1/3)(3, 6, 9) = (1,2,3) = b ⇒ <b>方程组相容</b>。<br>所以 x=(1,2) 是<b>极小范数解</b>（不是最小二乘解）。',
+why:'判定口诀：AA⁺b = b ⇔ 相容 ⇔ 极小范数解；≠ b ⇔ 不相容 ⇔ 极小范数最小二乘解。这一步决定结论怎么说，必写。'}
+]},
+'ex-gersh':{ch:'c4',title:'盖尔圆分离特征值',source:'资料·解答题（汇总 P.19）',type:'guide',kind:'特征值估计',
+desc:'A=[20 5 0.8; 4 10 1; 1 2 10j]，j=√−1。画盖尔圆，分离特征值。',
+steps:[
+{t:'按行写盖尔圆',body:'G<sub>1</sub>: |z−20| ≤ |5|+|0.8| = 5.8（圆心 20，半径 5.8）<br>G<sub>2</sub>: |z−10| ≤ |4|+|1| = 5<br>G<sub>3</sub>: |z−10j| ≤ |1|+|2| = 3（圆心在虚轴 (0,10)，半径 3）',
+why:'第 i 个盖尔圆只看第 i 行：圆心是主对角元 a<sub>ii</sub>，半径是该行去掉对角元后的绝对值之和。'},
+{t:'检查圆是否互不相交',body:'G<sub>1</sub> 覆盖实轴 [14.2, 25.8]；G<sub>2</sub> 覆盖 [5, 15]；G<sub>3</sub> 圆心 (0,10) 半径 3。<br>三者两两分离（距离 &gt; 半径之和），互不相交。',
+why:'盖尔圆定理的强结论：k 个圆组成的连通分支若与其他圆不相交，就恰好装 k 个特征值。三个圆都孤立 ⇒ 每个圆恰含 1 个特征值。'},
+{t:'下结论',body:'A 的三个特征值分别落在三个盖尔圆内：一个在 G<sub>1</sub>，一个在 G<sub>2</sub>，一个在 G<sub>3</sub>。',
+why:'这就是“分离特征值”的含义：不用解特征方程，就能知道每个特征值大概在哪。资料题要求画图并指出区域，画圆+标注即可。'},
+{t:'（延伸）判断可逆',body:'若需要判断 A 可逆：看 0 是否在所有圆之外。此处 0 不在并集内（最近圆 G<sub>2</sub> 离 0 有 5），可给出“可逆”的判断（结合行列式）。',
+why:'盖尔圆远离 0 ⇒ 行列式≠0 ⇒ 可逆。这是盖尔圆定理的另一大用途。'}
+]},
+'ex-trans':{ch:'c1',title:'求过渡矩阵',source:'资料·解答题（汇总 P.22）',type:'guide',kind:'线性空间',
+desc:'R³ 中，基 X=(x₁,x₂,x₃) 到标准基 E=(e₁,e₂,e₃)，x₁=(−1,1,1)，x₂=(1,0,−1)，x₃=(0,1,1)。求过渡矩阵。',
+steps:[
+{t:'把基按列拼成矩阵',body:'X = [x₁ x₂ x₃] = [−1 1 0; 1 0 1; 1 −1 1]，E = I₃。',
+why:'“基”就是一组列向量，拼成矩阵后，基变换就变成矩阵乘法。'},
+{t:'写基变换关系',body:'新基 E 用旧基 X 表示：E = X·P ⇒ 过渡矩阵 <b>P = X<sup>−1</sup>·E = X<sup>−1</sup></b>。',
+why:'记住口诀“新 = 旧 × 过渡”，从 X 到 E 的过渡矩阵是 X<sup>−1</sup>E。方向写反是这类题最常见的丢分点。'},
+{t:'求 X 的逆（伴随法）',body:'det X = −1（对角展开易算）。伴随矩阵 adj(X) = [1 −1 1; 0 −1 1; −1 0 −1]，<br>X<sup>−1</sup> = adj/det = [−1 1 −1; 0 1 −1; 1 0 1]。',
+why:'3 阶求逆用伴随法：先算行列式（不为 0 才可逆），再算每个位置的代数余子式，最后转置除以行列式。'},
+{t:'写出答案并验算',body:'过渡矩阵 P = [−1 1 −1; 0 1 −1; 1 0 1]。<br>验算：X·P = I₃ ✓（乘法结果应是单位阵）。',
+why:'验算一步到位：过渡矩阵的“翻译”功能要求 X·P=E，乘出来必须是 I。'}
+]},
+'ex-jordan':{ch:'c1',title:'求 Jordan 标准形',source:'资料·填空（汇总 P.7 答案）',type:'guide',kind:'标准形',
+desc:'A=[−1 1 0; −4 3 0; 1 0 2]，求 Jordan 标准形。',
+steps:[
+{t:'求特征多项式',body:'det(λI−A) = |λ+1 −1 0; 4 λ−3 0; −1 0 λ−2|<br>= (λ−2)·|λ+1 −1; 4 λ−3| = (λ−2)[(λ+1)(λ−3)+4]<br>= (λ−2)(λ²−2λ+1) = <b>(λ−1)²(λ−2)</b>。',
+why:'3 阶行列式按第三列展开最划算（两个 0），一步降成 2 阶。特征多项式定了特征值：λ=1（重数 2）、λ=2。'},
+{t:'看 λ=1 的几何重数',body:'A−I = [−2 1 0; −4 2 0; 1 0 1]，秩 = 2。<br>几何重数 = 3 − 2 = 1 &lt; 代数重数 2 ⇒ 不能对角化，λ=1 对应一个 2 阶 Jordan 块。',
+why:'几何重数（零空间维数）= n − rank(A−λI)。几何重数少 1 ⇒ 缺一个线性无关特征向量 ⇒ 用 1 补出一个 Jordan 块。'},
+{t:'拼 Jordan 标准形',body:'λ=1 对应 J₂(1)=[1 1; 0 1]，λ=2 对应 J₁(2)=[2]。<br>J = [1 1 0; 0 1 0; 0 0 2]。',
+why:'每个初等因子 (λ−λ₀)ᵏ 对应一个 k 阶 Jordan 块，把块按对角排好就是标准形（块顺序可以换）。'}
+]},
+'ex-svd':{ch:'c4',title:'求全部奇异值',source:'资料·填空（汇总 P.9 同款）',type:'guide',kind:'分解',
+desc:'A=[1 0; 0 1; 1 1]（3×2），求全部奇异值。',
+steps:[
+{t:'先算 AᴴA',body:'A<sup>T</sup>A = [1 0 1; 0 1 1]·[1 0; 0 1; 1 1] = [2 1; 1 2]。',
+why:'奇异值 = √(AᴴA 的特征值)。A 是实矩阵所以用转置；AᴴA 是 Hermite（实对称），特征值必非负。'},
+{t:'求 AᴴA 的特征值',body:'det(λI−AᴴA) = |λ−2 −1; −1 λ−2| = (λ−2)²−1 = (λ−3)(λ−1)。<br>特征值：λ=3、1。',
+why:'2 阶对称阵直接展开解。两个特征值都 ≥0，符合 Hermite 阵的性质，也预兆奇异值有意义。'},
+{t:'开方得奇异值',body:'σ₁ = √3，σ₂ = √1 = 1。<br>全部奇异值：<b>√3、1</b>。',
+why:'奇异值是非负特征值的算术平方根，按降序写。A 是 3×2 列满秩，奇异值个数 = 列数 2。'}
+]},
+'ex-sym':{ch:'c1',title:'正交对角化：求正交 P',source:'资料·解答题（汇总 P.31）',type:'guide',kind:'线性空间',
+desc:'A=[2 2 −2; 2 5 −4; −2 −4 5]（实对称），求正交矩阵 P 使 PᵀAP 成对角形。',
+steps:[
+{t:'验证对称、求特征值',body:'A<sup>T</sup>=A ⇒ 可正交对角化。<br>det(λI−A) = (λ−1)²(λ−10)：特征值 λ=1（重数 2）、10。',
+why:'实对称矩阵必可正交对角化——这是做题的前提保证。特征多项式展开后因式分解找特征值。'},
+{t:'λ=10 的特征向量',body:'解 (10I−A)x=0：10I−A = [8 −2 2; −2 5 4; 2 4 5]。<br>取 v=(1/2,1,−1)，单位化：||v||=3/2 ⇒ v̂=(1/3, 2/3, −2/3)。',
+why:'不同特征值的特征向量自动正交，所以这个向量不用再做正交化，只需单位化。'},
+{t:'λ=1 的特征空间（维数 2）',body:'A−I = [1 2 −2; 2 4 −4; −2 −4 4]，秩 1 ⇒ 零空间维数 2。<br>取 a=(2,−1,0)（满足 x₁+2x₂−2x₃=0），再取与 a 正交且在平面内的 b=(2,4,5)。<br>单位化：â=(2/√5, −1/√5, 0)，b̂=(2/(3√5), 4/(3√5), 5/(3√5))。',
+why:'重特征值内部要“人工”选两个彼此正交的向量：先取一个，再用叉乘/正交化得到另一个，最后都单位化。'},
+{t:'拼 P 并写答案',body:'P = [v̂ â b̂]（按列排三个单位特征向量）。<br>P<sup>T</sup>AP = diag(10, 1, 1)。',
+why:'正交矩阵的列就是两两正交的单位特征向量；对角元顺序与列的顺序一一对应（先放 λ=10 的列，对角第一个就是 10）。'}
+]},
+'ex-map':{ch:'c1',title:'线性变换在基下的矩阵',source:'资料·填空（汇总 P.8）',type:'guide',kind:'线性空间',
+desc:'R³ 中 T(x)=(2ξ₁−ξ₂, ξ₂+ξ₃, ξ₁)，求 T 在标准基下的矩阵。',
+steps:[
+{t:'把基向量代入 T',body:'T(e₁)=T(1,0,0) = (2·1−0, 0+0, 1) = (2,0,1)<br>T(e₂)=T(0,1,0) = (0−1, 1+0, 0) = (−1,1,0)<br>T(e₃)=T(0,0,1) = (0, 0+1, 0) = (0,1,0)',
+why:'线性变换的矩阵 = “基向量的像”按列排。逐一代入是最稳的做法，别背公式。'},
+{t:'按列排成矩阵',body:'A = [T(e₁) T(e₂) T(e₃)] = [2 −1 0; 0 1 1; 1 0 0]。',
+why:'列的顺序就是基的顺序：第 j 列是 eⱼ 的像。'},
+{t:'验算',body:'取任意 x=(ξ₁,ξ₂,ξ₃)，A·x 应等于 T(x)。<br>A·(ξ₁,ξ₂,ξ₃) = (2ξ₁−ξ₂, ξ₂+ξ₃, ξ₁) ✓。',
+why:'用“矩阵作用=变换作用”回代一个通用向量验证，能抓住排错列/转置的毛病。'}
+]},
+'ex-proof-sub':{ch:'c1',title:'证明：交与和都是子空间',source:'资料·证明题（汇总 P.23）',type:'guide',kind:'证明',
+desc:'V 是数域 K 上线性空间，V₁、V₂ 是子空间。证明 V₁∩V₂ 与 V₁+V₂ 都是子空间。',
+steps:[
+{t:'亮出判据',body:'子空间判据：W 非空，且对加法、数乘封闭（∀u,v∈W：u+v∈W；∀k∈K,u∈W：ku∈W）。',
+why:'证明“是子空间”永远走这一条路：非空 + 封闭。先把判据写在卷面上，阅卷按点给分。'},
+{t:'证 V₁∩V₂ 封闭',body:'任取 u,v∈V₁∩V₂ ⇒ u,v∈V₁ 且 u,v∈V₂。<br>因 V₁、V₂ 是子空间：u+v∈V₁ 且 u+v∈V₂ ⇒ u+v∈V₁∩V₂。<br>对任意 k：ku∈V₁ 且 ku∈V₂ ⇒ ku∈V₁∩V₂。',
+why:'“∈交集”翻译成“同时属于两个空间”，就能借用两个子空间各自的封闭性，这是交集证明的固定套路。'},
+{t:'证 V₁+V₂ 封闭',body:'任取 u₁+v₁, u₂+v₂∈V₁+V₂：<br>(u₁+v₁)+(u₂+v₂) = (u₁+u₂)+(v₁+v₂)，前者∈V₁、后者∈V₂ ⇒ 和∈V₁+V₂。<br>k(u₁+v₁)=ku₁+kv₁∈V₁+V₂。',
+why:'和的元素写成“u+v”的形式后，加法和数乘都逐项落回各自的子空间，封闭性自然成立。'},
+{t:'非空 + 结论',body:'V₁∩V₂ 与 V₁+V₂ 都含零向量（0∈V₁ 且 0∈V₂），非空。<br>综上两者都是子空间。□',
+why:'非空用零向量最容易写。整个证明 4 个要点齐全即满分。'}
+]},
+'ex-norm-proof':{ch:'c2',title:'证明 ||x||₁ 是向量范数',source:'资料·证明题（汇总 P.23）',type:'guide',kind:'证明',
+desc:'x=(ξ₁,…,ξₙ)∈Cⁿ，证明 ||x||₁ = Σ|ξᵢ| 是 Cⁿ 上的范数。',
+steps:[
+{t:'验证非负性',body:'|ξᵢ|≥0 对每个 i ⇒ ||x||₁≥0；且 ||x||₁=0 ⇔ 所有 |ξᵢ|=0 ⇔ x=0。',
+why:'范数第一条：非负 + 只有零向量取零。逐条写清楚。'},
+{t:'验证齐次性',body:'||kx||₁ = Σ|kξᵢ| = |k|·Σ|ξᵢ| = |k|·||x||₁。',
+why:'把 |kξᵢ| 拆成 |k|·|ξᵢ|，公因子提出求和号。'},
+{t:'验证三角不等式',body:'||x+y||₁ = Σ|ξᵢ+ηᵢ| ≤ Σ(|ξᵢ|+|ηᵢ|) = ||x||₁+||y||₁。<br>（用到的只是实数的 |a+b|≤|a|+|b|。）',
+why:'三角不等式的证明归结为实数的绝对值不等式，一行写完。'},
+{t:'结论',body:'三条公理全部满足 ⇒ ||x||₁ 是范数。□',
+why:'范数证明就这三条，缺一不可。同类题：l₂ 用柯西不等式，l∞ 用“最大值不超过和”。'}
+]},
+'ex-minpoly':{ch:'c1',title:'求最小多项式并降幂',source:'PPT 第 1 章例 13（最小多项式）',type:'guide',kind:'线性空间',
+desc:'A=[3 −3 2; −1 5 −2; −1 3 0]。求最小多项式，并说明矩阵函数降幂的原理。',
+steps:[
+{t:'求特征多项式',body:'det(λI−A) = (λ−2)²(λ−4)。<br>特征值：λ=2（重数 2）、λ=4。',why:'最小多项式与特征多项式零点相同，先分解特征多项式，再从它的因式里逐个试。'},
+{t:'逐个试因式',body:'一次因式 λ−2、λ−4 代入 A 都不是零矩阵，排除。<br>试二次因式 (λ−2)(λ−4)=λ²−6λ+8：<br>算 A²−6A+8I = O ✓',why:'最小多项式是“次数最低的零化多项式”，从低次因式开始试，第一个满足 m(A)=O 的就是。'},
+{t:'写出最小多项式',body:'m(λ) = λ²−6λ+8。',why:'确认首项系数 1、次数最低、m(A)=O，即唯一的最小多项式。'},
+{t:'解释用途（降幂原理）',body:'由 m(A)=O ⇒ A²=6A−8I，于是 A³、A⁴… 都能写成 I 和 A 的线性组合。<br>算 f(A) 时：f(λ)=m(λ)q(λ)+r(λ)，代入 A 得 f(A)=r(A)。',why:'待定系数法的依据：m(A)q(A)=O，只剩低次余式 r(A)=b₀I+b₁A，这就是“矩阵函数先降幂再待定系数”的来源。'}
+]},
+'ex-mfunc':{ch:'c3',title:'对角形法求 cosA',source:'PPT 第 3 章例 7（矩阵函数值的求法）',type:'guide',kind:'矩阵分析',
+desc:'A=[4 6 0; −3 −5 0; −3 −6 1]，用对角形法求 cosA。',
+steps:[
+{t:'求特征多项式',body:'λI−A=[λ−4 −6 0; 3 λ+5 0; 3 6 λ−1]，按第三列展开：<br>det(λI−A) = (λ−1)·det[λ−4 −6; 3 λ+5] = (λ−1)[(λ−4)(λ+5)+18]<br>= (λ−1)(λ²+λ−2) = <b>(λ+2)(λ−1)²</b>。',why:'先求特征值，判断能否对角化：特征值 λ=−2、λ=1（二重）。'},
+{t:'验证可对角化并找 P',body:'对 λ=1：A−I=[3 6 0; −3 −6 0; −3 −6 0]，秩=1 ⇒ 几何重数=2=代数重数 ⇒ 可对角化。<br>取 P=[−1 −2 0; 1 1 0; 1 0 1]，使 P⁻¹AP=diag(−2,1,1)（PPT 给出）。',why:'对角形法的前提是 A 可对角化；P 的列是特征向量（重根内部线性无关即可）。'},
+{t:'套对角形公式',body:'cosA = P·diag(cos(−2), cos1, cos1)·P⁻¹。',why:'可对角化时 f(A)=P·diag(f(λᵢ))·P⁻¹，把函数作用在特征值上即可，不用展开无穷级数。'},
+{t:'展开并写答案',body:'cosA = [2cos1−cos2, 2cos1−2cos2, 0; cos2−cos1, 2cos2−cos1, 0; cos2−cos1, 2cos2−2cos1, cos1]（矩阵乘法逐项展开）。',why:'P·D·P⁻¹ 三连乘要耐心展开；对角元顺序与特征值顺序一一对应，写错顺序会全盘错。'}
+]},
+'ex-proj':{ch:'c6',title:'求正交投影矩阵 P_L',source:'PPT 第 6 章例 6.5（投影矩阵与 Moore 逆）',type:'guide',kind:'广义逆',
+desc:'ℝ³ 中 L=L(α,β)，α=(1,2,0)ᵀ、β=(0,1,1)ᵀ。求 L 上的正交投影矩阵 P_L。',
+steps:[
+{t:'按列拼 X',body:'X=[α β]=[1 0; 2 1; 0 1]（3×2 列满秩，α、β 线性无关）。',why:'正交投影矩阵公式 P_L=X(XᴴX)⁻¹Xᴴ 中，X 是子空间 L 的基向量按列排成的矩阵。'},
+{t:'算 XᴴX 与逆',body:'XᴴX = [1 2 0; 0 1 1]·[1 0; 2 1; 0 1] = [5 2; 2 2]。<br>(XᴴX)⁻¹ = (1/6)[2 −2; −2 5]。',why:'X 列满秩 ⇒ XᴴX 是 2×2 可逆阵，2 阶逆直接套公式 (1/det)[d −b; −c a]。'},
+{t:'代入公式',body:'P_L = X(XᴴX)⁻¹Xᴴ = [1 0; 2 1; 0 1]·(1/6)[2 −2; −2 5]·[1 2 0; 0 1 1]<br>= (1/6)[2 2 −2; 2 5 1; −2 1 5]。',why:'矩阵乘法顺序不能换：X·(XᴴX)⁻¹·Xᴴ。算完检查对称性（P_L 应 Hermite）。'},
+{t:'验算',body:'P_L²=P_L（幂等 ✓）；P_Lᴴ=P_L（Hermite ✓）；P_Lα=α、P_Lβ=β（对基向量保持不动 ✓）。',why:'正交投影矩阵三件套验算：幂等、Hermite、对子空间向量不变。三条都过就是正确答案。'}
+]},
+'ex-lincheck':{ch:'c1',title:'判定线性变换：T(X)=BX+XB',source:'PPT 第 1 章·第 2 节例 2',type:'guide',kind:'线性空间',
+desc:'V=C^{n×n}，B∈V 固定。验证 T(X)=BX+XB 是 V 上的线性变换（实为“保加法、保数乘”的判定）。',
+steps:[
+{t:'写出线性变换的判据',body:'T 是线性变换 ⇔ 对任意 X,Y∈V、任意数 k：<br>① T(X+Y)=T(X)+T(Y)；② T(kX)=kT(X)。',why:'判定线性变换永远只查这两条，先写在卷面上再逐条验证。'},
+{t:'验证加法',body:'T(X+Y)=B(X+Y)+(X+Y)B=BX+BY+XB+YB<br>=(BX+XB)+(BY+YB)=T(X)+T(Y) ✓',why:'矩阵乘法对加法分配，拆开再按“B 在前、B 在后”两项归位，恰好拼回 T(X)+T(Y)。'},
+{t:'验证数乘',body:'T(kX)=B(kX)+(kX)B=kBX+kXB=k(BX+XB)=kT(X) ✓',why:'数 k 可以穿过矩阵乘法提到外面，因为每个元素都是数乘。'},
+{t:'下结论',body:'两条都成立 ⇒ T 是线性变换。',why:'这类题的套路就是“加法+数乘”双验证；例 2 的结论可推广：T(X)=BXC 形式也都成立。'}
+]},
+'ex-rangenn':{ch:'c1',title:'求线性变换的值域与核',source:'PPT 第 1 章·第 2 节例 5',type:'guide',kind:'线性空间',
+desc:'求 R⁴ 上线性变换 T 的值域 R(T)、核 N(T) 的一组基，并验证维数定理。',
+steps:[
+{t:'写出 T 在标准基下的矩阵',body:'设 T(e₁),T(e₂),…,T(eₙ) 已知（本例由 PPT 给出），按列排成矩阵 A。',why:'线性变换的“像”信息全在矩阵 A 里：R(T) 就是 A 的列空间，N(T) 就是 Ax=0 的解空间。'},
+{t:'求 R(T) 的基：列空间',body:'对 A 做行初等变换化成行阶梯形，主元列在 A 中对应的列就是 R(T) 的一组基。',why:'行变换不改变列之间的线性关系，主元列恰好是线性无关的极大组。'},
+{t:'求 N(T) 的基：解齐次方程',body:'解 Ax=0，把自由变量分别取 1、其余取 0，得到的基础解系就是 N(T) 的一组基。',why:'基础解系线性无关且张成整个解空间，正好是核的一组基。'},
+{t:'验证维数定理',body:'dim R(T) + dim N(T) = n（本例 n=4）。<br>若 rank A = r，则 dim R(T)=r，dim N(T)=n−r。',why:'维数定理 dimR(T)+dimN(T)=n 是验算的保险：算完两组基，加和必须等于空间维数。'}
+]},
+'ex-charpoly':{ch:'c1',title:'特征值与特征向量的四步求法',source:'PPT 第 1 章·第 2 节例 10（求法流程）',type:'guide',kind:'线性空间',
+desc:'求方阵 A 的特征值与特征向量（四步通用流程，适用于任意 PPT 给的 A）。',
+steps:[
+{t:'第一步：写 λI−A',body:'在 A 的主对角元上减 λ：λI−A = [[λ−a₁₁, −a₁₂, …],…]。',why:'特征方程源于 det(λI−A)=0，先把矩阵形式摆好。'},
+{t:'第二步：解特征方程',body:'det(λI−A)=0，展开并因式分解，得到特征值 λ₁,…,λₙ（计重数）。',why:'特征值就是“让 λI−A 不可逆”的那些 λ，即行列式为零。'},
+{t:'第三步：逐一代入解方程',body:'对每个特征值 λ₀：解 (λ₀I−A)x=0，基础解系就是 λ₀ 的全部特征向量。',why:'特征向量是齐次方程的非零解；基础解系张成特征子空间 V_{λ₀}，其维数=几何重数。'},
+{t:'第四步：核对重数与维数',body:'几何重数 dim V_{λ₀}=n−rank(λ₀I−A) ≤ 代数重数。相等时可对角化。',why:'这是后续“能否对角化”的判断入口：每个特征值的几何重数必须等于代数重数。'}
+]},
+'ex-diag':{ch:'c1',title:'矩阵可对角化的判定与计算',source:'PPT 第 1 章·第 2 节例 11（四步计算法）',type:'guide',kind:'线性空间',
+desc:'判断 A 是否可对角化；若能，求 P 使 P⁻¹AP 为对角阵（通用流程）。',
+steps:[
+{t:'求全部特征值与几何重数',body:'解 det(λI−A)=0 得特征值；对每个 λ₀ 算 dim V_{λ₀}=n−rank(λ₀I−A)。',why:'对角化充要条件：每个特征值的几何重数=代数重数（共有 n 个线性无关特征向量）。'},
+{t:'判是否可对角化',body:'所有几何重数都等于代数重数 ⇒ 可对角化；否则（几何重数偏小）不可对角化，只能求 Jordan 形。',why:'n 个线性无关特征向量恰好凑成一组基，特征向量的个数不够就装不下对角阵。'},
+{t:'拼 P 与对角阵',body:'把每个特征子空间的特征向量按列拼成 P；对角元顺序与 P 的列顺序一一对应，写 Λ=diag(λ₁,…,λₙ)。',why:'P⁻¹AP=diag(λᵢ) 的列顺序就是特征值的排列顺序，写反顺序会全盘错。'},
+{t:'验算',body:'逐列验证 AP=PΛ（等价于 A·pᵢ=λᵢ·pᵢ），或直接算 P⁻¹AP。',why:'AP=PΛ 一列一列查最快，能抓住“特征向量串列”的笔误。'}
+]},
+'ex-cayley':{ch:'c1',title:'Cayley–Hamilton 求高次幂（带余除法）',source:'PPT 第 1 章·第 2 节例 12（A^100+2A^50 同款方法）',type:'guide',kind:'线性空间',
+desc:'用特征多项式 φ(λ) 与带余除法计算 A^100+2A^50 型的矩阵多项式（通用流程）。',
+steps:[
+{t:'写出特征多项式 φ(λ)',body:'φ(λ)=det(λI−A)。由 Cayley–Hamilton：φ(A)=O。',why:'Cayley–Hamilton 说矩阵满足自己的特征多项式，这是“降幂”的根据。'},
+{t:'做带余除法',body:'把 f(λ)=λ^100+2λ^50 除以 φ(λ)：<br>f(λ)=φ(λ)q(λ)+r(λ)，其中 deg r &lt; deg φ。',why:'代入 A 后 φ(A)q(A)=O，f(A) 只剩低次余式 r(A)——高次幂全部消失。'},
+{t:'用特征值定 r 的系数',body:'r(λ)=b₀+b₁λ+…；由 f(λᵢ)=r(λᵢ) 联立解出 b₀,b₁,…。<br>若 λ₀ 是重根，还要用导数条件 f′(λ₀)=r′(λ₀)、f″(λ₀)=r″(λ₀)…',why:'重根时特征值信息不够，必须补导数条件才解得出全部系数（PPT 例 12 关键步）。'},
+{t:'回代得结果',body:'f(A)=r(A)=b₀I+b₁A+…，把矩阵乘出来就是答案。',why:'这是“待定系数法”思想的雏形：矩阵函数的计算最终都归结为低次多项式。'}
+]},
+'ex-jordanP':{ch:'c1',title:'求 Jordan 标准形的相似变换矩阵 P',source:'PPT 第 1 章·第 2 节例 21（广义特征向量）',type:'guide',kind:'标准形',
+desc:'已知 A 的 Jordan 标准形 J，求可逆矩阵 P 使 P⁻¹AP=J（通用流程）。',
+steps:[
+{t:'确定 Jordan 形 J 与块结构',body:'由初等因子拼出 J=diag(J₁,…,Jₛ)，并标好每个块的大小 m₁,…,mₛ 与特征值。',why:'P 的列要按 Jordan 块的顺序排，先确定块结构才有目标。'},
+{t:'第一列：取普通特征向量',body:'块 J(λ₀) 的第一列 x₁ 满足 (λ₀I−A)x₁=0（特征向量），先解出来。',why:'Jordan 块的列是“广义特征向量链”，链头必须是真正的特征向量。'},
+{t:'后续列：解广义特征向量方程',body:'第 j 列 xⱼ 满足 (λ₀I−A)xⱼ = −x_{j−1}（把上一列移到右边解非齐次方程）。',why:'广义特征向量把 A 的作用表现为“后一列压向前一列”，正是 Jordan 块上三角 1 的来源。'},
+{t:'拼 P 并验算',body:'P=(x₁…xₙ) 按块排好，验算 AP=PJ（逐列验证）。',why:'AP=PJ 逐列核对，确认每一列都走对了链，即可放心写 P⁻¹AP=J。'}
+]},
+'ex-odesys':{ch:'c1',title:'Jordan 化解微分方程组',source:'PPT 第 1 章·第 2 节例 22',type:'guide',kind:'标准形',
+desc:'用 x=Py 把微分方程组 x′=Ax 化为 y′=Jy（J 为 Jordan 形）再求解（通用流程）。',
+steps:[
+{t:'求 A 的 Jordan 形与 P',body:'P⁻¹AP=J。令 x=Py，则 x′=Py′。',why:'线性替换把矩阵对角块化，微分方程就分解成一个个独立（或“链式”）的子系统。'},
+{t:'方程变形',body:'x′=Ax ⇒ Py′=APy=PJ y ⇒ y′=Jy。',why:'两边左乘 P⁻¹，A 在 y 坐标系里变成 J，方程结构立即变简单。'},
+{t:'分块解 y′=Jy',body:'J 是分块对角：每个 Jordan 块对应一组方程。<br>对角块 y′=λy 解 y=ce^{λt}；上三角 1 则引入 te^{λt} 项。',why:'Jordan 块里的 1 只产生“多项式×指数”因子，逐块写解即可。'},
+{t:'回代 x=Py',body:'x(t)=P·y(t)，把各分块解线性组合起来就是通解。',why:'x=Py 是坐标翻译，最后一步把 y 坐标系里的解搬回原坐标系。'}
+]},
+'ex-schmidt':{ch:'c1',title:'Schmidt 正交化与单位化',source:'PPT 第 1 章·第 3 节例 8（流程）',type:'guide',kind:'线性空间',
+desc:'把线性无关向量组 a₁,…,aₘ 化为标准正交向量组（通用流程）。',
+steps:[
+{t:'第一步：β₁=a₁ 并单位化',body:'β₁=a₁，q₁=β₁/||β₁||。',why:'第一个向量没有前面的投影可减，直接归一化。'},
+{t:'第二步：减去投影',body:'β₂=a₂−(a₂·q₁)q₁；β₃=a₃−(a₃·q₁)q₁−(a₃·q₂)q₂；……',why:'每步把当前向量减去它在前面所有 qᵢ 方向上的投影，剩下的部分与前面全部正交。'},
+{t:'第三步：单位化',body:'qᵢ=βᵢ/||βᵢ||。',why:'正交化保证两两垂直，单位化把长度拉成 1，两步合起来就是标准正交基。'},
+{t:'验算',body:'检查 (qᵢ,qⱼ)=δᵢⱼ（i=j 时 1，否则 0），且每个 qᵢ 仍可由原向量组线性表示。',why:'标准正交基的两条性质：两两正交+单位长度。验一条矩阵 G=(qᵢᵀqⱼ)=I 即可。'}
+]},
+'ex-orthoP':{ch:'c1',title:'正规矩阵与酉对角化的判别',source:'PPT 第 1 章·第 3 节例 12（非正规但可相似对角化）',type:'guide',kind:'线性空间',
+desc:'判别矩阵能否相似对角化 vs 能否酉对角化（用正规性判断）。',
+steps:[
+{t:'先算 AᴴA 与 AAᴴ',body:'分别算出 AᴴA 与 AAᴴ，比较是否相等。',why:'正规矩阵定义：AᴴA=AAᴴ。Hermite、酉、正交、实对称阵都自动正规。'},
+{t:'判断是否酉对角化',body:'AᴴA=AAᴴ ⇒ 存在酉矩阵 U 使 UᴴAU 为对角阵。<br>否则（非正规）不能酉对角化。',why:'酉相似对角化 ⇔ 正规，这是定理 1.42 的充要条件，一步判完。'},
+{t:'再判是否相似对角化',body:'相似对角化看几何重数=代数重数，与正规性无关。<br>PPT 例 12：矩阵非正规，但仍可相似对角化。',why:'相似对角化是更弱的性质：只需特征向量够数；非正规矩阵也可能办到（不可酉对角化而已）。'},
+{t:'辨析结论',body:'“可相似对角化”≠“可酉对角化”。正规性是酉对角化的充要条件，不是相似对角化的。',why:'这是考试最爱挖的坑：两个“对角化”条件不同，先看题目要求哪一个。'}
+]},
+'ex-limseq':{ch:'c1',title:'向量序列的收敛判定',source:'PPT 第 2 章例 1（向量序列极限）',type:'guide',kind:'范数',
+desc:'判断向量序列 x^{(k)} 是否收敛（等价条件演示）。',
+steps:[
+{t:'收敛的等价条件',body:'x^{(k)}→x ⇔ 每个分量 ξᵢ^{(k)}→ξᵢ（逐分量收敛）<br>⇔ 对任一范数，||x^{(k)}−x||→0。',why:'有限维空间里“收敛”与坐标收敛一致，且与范数的选取无关（范数等价性）。'},
+{t:'算分量极限',body:'逐个分量求 k→∞ 的极限，都收敛且极限向量为 x。',why:'逐分量判断最直观，是做题的首选。'},
+{t:'用范数复核',body:'计算 ||x^{(k)}−x||（如取 l∞ 范数）= maxᵢ|ξᵢ^{(k)}−ξᵢ|，验证趋于 0。',why:'用范数复核等于换了一把尺子再验一次，防止“看起来像收敛”的误判。'}
+]},
+'ex-lpnorm':{ch:'c1',title:'ℓp 范数与 ℓ∞ 范数',source:'PPT 第 2 章例 3（||x||∞=lim_{p→∞}||x||p）',type:'guide',kind:'范数',
+desc:'说明 ||x||_p=(Σ|ξᵢ|ᵖ)^{1/p} 与 ||x||_∞=max|ξᵢ| 的关系。',
+steps:[
+{t:'写出 ℓp 范数定义',body:'||x||_p=(|ξ₁|ᵖ+…+|ξₙ|ᵖ)^{1/p}（p≥1）。',why:'p=1 是绝对值之和，p=2 是欧氏长度，统一定义便于比较。'},
+{t:'极限关系',body:'||x||_∞=lim_{p→∞}||x||_p。<br>直观：p 越大，最大的那个 |ξᵢ| 在和中越占主导，极限就是最大值。',why:'把 max|ξᵢ| 从和中提出来：||x||_p=max|ξᵢ|·(Σ(|ξᵢ|/max)ᵖ)^{1/p}，括号趋于 1。'},
+{t:'三角不等式的证明工具',body:'p&gt;1 时三角不等式由 Hölder 不等式证明（1/p+1/q=1）；p=∞ 直接由 max 的性质得。',why:'Hölder 不等式是 ℓp 范数三角不等式的“钥匙”，考试证明题常考。'}
+]},
+'ex-weighted':{ch:'c1',title:'加权范数 ||x||_A',source:'PPT 第 2 章例 4（对称正定 A 的加权范数）',type:'guide',kind:'范数',
+desc:'A 对称正定，证明 ||x||_A=√(xᵀAx) 是向量范数（三角不等式是关键）。',
+steps:[
+{t:'非负性与齐次性',body:'A 正定 ⇒ xᵀAx≥0，且 =0 ⇔ x=0；||kx||_A=|k|·||x||_A。',why:'前两条公理由正定性和齐次性直接得出，秒过。'},
+{t:'三角不等式的准备',body:'A 对称正定 ⇒ 存在可逆 B 使 A=BᵀB（比如正交对角化后开方，或用 Cholesky）。',why:'把加权范数还原成“某个矩阵 B 作用后的 l₂ 范数”，就能借用 l₂ 的三角不等式。'},
+{t:'证明三角不等式',body:'||x+y||_A=||Bx+By||₂ ≤ ||Bx||₂+||By||₂ = ||x||_A+||y||_A。',why:'关键一步：√((x+y)ᵀA(x+y))=√((B(x+y))ᵀ(B(x+y)))，直接落回 l₂ 的三角不等式。'}
+]},
+'ex-equv':{ch:'c1',title:'常用范数的等价不等式',source:'PPT 第 2 章例 6（三组换算）',type:'guide',kind:'范数',
+desc:'在 Cⁿ 上写出 l₁、l₂、l∞ 范数之间的换算不等式。',
+steps:[
+{t:'第一组：l∞ 夹在中间',body:'||x||_∞ ≤ ||x||₁ ≤ n·||x||_∞。',why:'左边：最大分量不超过和；右边：和不超过“最大分量×n 项”。'},
+{t:'第二组：l∞ 与 l₂',body:'||x||_∞ ≤ ||x||₂ ≤ √n·||x||_∞。',why:'左边：一个分量的平方 ≤ 平方和；右边：n 个分量平方和 ≤ n·(最大平方)。'},
+{t:'第三组：l₁ 与 l₂',body:'||x||₁/√n ≤ ||x||₂ ≤ ||x||₁。',why:'右边由 Cauchy 不等式（内积≤模长积）直接得；左边把 Cauchy 反用在常数向量上。'},
+{t:'结论：范数等价',body:'任意两种范数等价（存在 c₁,c₂&gt;0 使 c₁||x||≤||x||′≤c₂||x||），收敛性判断可任选范数。',why:'这些不等式就是“等价”的具体系数；考试填空常考 n、√n 这些换算系数。'}
+]},
+'ex-mnormcompat':{ch:'c1',title:'矩阵范数与向量范数的相容性',source:'PPT 第 2 章例 1-3（m₁/m∞/F 范数）',type:'guide',kind:'范数',
+desc:'说明三种常用矩阵范数分别与哪种向量范数相容。',
+steps:[
+{t:'矩阵范数三条公理',body:'非负、齐次、三角不等式，另加相容性 ||AB||≤||A||·||B||（广义矩阵范数可不要相容性）。',why:'矩阵范数是“矩阵空间上的范数”；相容性把矩阵范数和乘法绑在一起。'},
+{t:'m₁ 范数与 l₁ 相容',body:'||A||_{m1}=Σ|aᵢⱼ|（全部元素绝对值之和）与 ||x||₁ 相容。',why:'||Ax||₁=Σᵢ|Σⱼaᵢⱼxⱼ|≤Σᵢⱼ|aᵢⱼ||xⱼ|≤(Σ|aᵢⱼ|)(Σ|xⱼ|)=||A||_{m1}||x||₁。'},
+{t:'m∞ 范数与 l∞ 相容',body:'||A||_{m∞}=n·max|aᵢⱼ| 与 ||x||_∞ 相容。',why:'每行至多 n 项、每项不超过 max|aᵢⱼ|·||x||_∞，行和上限即 n·max。'},
+{t:'F 范数与 l₂ 相容',body:'||A||_F=√Σ|aᵢⱼ|² 与 ||x||₂ 相容，且 ||A||_F²=tr(AᴴA)。',why:'把 A 的列看成向量用 Cauchy 不等式：||Ax||₂≤||A||_F·||x||₂。F 范数还是酉不变的：||PA||_F=||A||_F=||AQ||_F。'}
+]},
+'ex-subnorm':{ch:'c1',title:'从属（导出）矩阵范数',source:'PPT 第 2 章定理 2.5（||A||₁/₂/∞）',type:'guide',kind:'范数',
+desc:'由向量范数导出的从属范数及其常用表达式。',
+steps:[
+{t:'从属范数定义',body:'||A||_M=max_{x≠0} ||Ax||/||x|| = max_{||x||=1} ||Ax||。',why:'“矩阵能把单位球上的向量拉多长”就是矩阵的算子范数；由它自动满足三条公理，且 ||Ax||≤||A||·||x||。'},
+{t:'||A||₁=列和最大',body:'||A||₁ = maxⱼ Σᵢ|aᵢⱼ|（各列绝对值之和的最大值）。',why:'取 x 为第 j 个标准基向量时 ||Ax||₁=列和；任何 x 都被列和最大值控制，取等成立。'},
+{t:'||A||₂=谱范数',body:'||A||₂ = √λ_max(AᴴA) = σ_max（最大奇异值）。',why:'max ||Ax||₂² = max xᴴAᴴAx，Rayleigh 商最大值就是 AᴴA 的最大特征值。'},
+{t:'||A||_∞=行和最大',body:'||A||_∞ = maxᵢ Σⱼ|aᵢⱼ|（各行绝对值之和的最大值）。',why:'||Ax||_∞ 被某一行控制，行和最大那一行给出上界且可取到。'},
+{t:'注意 ||I||=1',body:'对从属范数恒有 ||I||=1（由定义直接得）。',why:'这是从属范数的标志性性质，常用来验证一个范数“是不是导出的”。'}
+]},
+'ex-midem':{ch:'c3',title:'幂等矩阵的指数：e^A',source:'PPT 第 3 章例 3（幂等 e^A）',type:'guide',kind:'矩阵分析',
+desc:'A=[1 1; 0 0]，B=[1 −1; 0 0]。计算 e^A、e^B、e^{A+B}，并说明 e^{A+B}≠e^Ae^B。',
+steps:[
+{t:'先看 A²',body:'A²=[1 1; 0 0]·[1 1; 0 0]=[1 1; 0 0]=A（幂等）。',why:'幂等矩阵 A²=A 让级数每一项只剩 A 和 I，e^A 变成 I+(e−1)A。'},
+{t:'套幂等公式',body:'e^A=I+(e−1)A=[1 0; 0 1]+(e−1)[1 1; 0 0]=[e e−1; 0 1]。<br>同理 B²=B：e^B=[e 1−e; 0 1]。',why:'e^A=I+A+A²/2!+…，A²=A 后每项都是 A 的倍数，系数 1+1/1!+1/2!+…=e。'},
+{t:'算 e^{A+B}',body:'A+B=[2 0; 0 0]=2[1 0; 0 0]，且 (A+B)ᵏ=2^{k−1}(A+B)。<br>e^{A+B}=I+½(e²−1)(A+B)=[e² 0; 0 1]。',why:'对角块 (2,0) 可直接展开：对角元 e²、e⁰=1，不需要幂等技巧。'},
+{t:'结论：一般 e^{A+B}≠e^Ae^B',body:'e^Ae^B=[e² −(e−1)²; 0 1] ≠ e^{A+B}。<br>只有当 AB=BA 时才有 e^{A+B}=e^Ae^B（定理 3.7）。',why:'矩阵乘法的不可交换破坏了指数相加公式；考试判断题爱考“一般不成”。'}
+]},
+'ex-mexp':{ch:'c3',title:'待定系数法求 e^{tA}',source:'PPT 第 3 章例 5（e^{tA}）',type:'guide',kind:'矩阵分析',
+desc:'A=[2 0 0; 1 1 1; 1 −1 3]，求 e^{tA}。',
+steps:[
+{t:'求特征多项式与最小多项式',body:'φ(λ)=(λ−2)³；最小多项式 m(λ)=(λ−2)²。<br>即 A 的特征值只有 λ=2，且 (A−2I)²=O。',why:'最小多项式次数 2 ⇒ e^{tλ} 除以 m(λ) 的余式是一次多项式 r(λ)=a+bλ。'},
+{t:'做带余除法',body:'e^{tλ}=m(λ)q(λ)+a+bλ，于是 e^{tA}=aI+bA。',why:'m(A)q(A)=O，只剩余式 aI+bA——这正是待定系数法。'},
+{t:'用特征值及其导数定系数',body:'在 λ=2 处：<br>f(2)=e^{2t}=a+2b；f′(2)=t·e^{2t}=b。<br>解得 b=t e^{2t}，a=(1−2t)e^{2t}。',why:'λ=2 是 m 的重根，一个方程不够，必须补导数条件 f′(2)=r′(2)。'},
+{t:'回代得结果',body:'e^{tA}=aI+bA=(1−2t)e^{2t}I+t e^{2t}A<br>=e^{2t}[1 0 0; t 1−t t; t −t 1+t]。',why:'把 a、b 代入后做矩阵运算；验算：t=0 时应为 I，e^{2·0}·[1 0 0;0 1 0;0 0 1]=I ✓。'}
+]},
+'ex-msin':{ch:'c3',title:'数项级数求和法求 sinA',source:'PPT 第 3 章例 6（sinA，用 φ(A)=O 降幂）',type:'guide',kind:'矩阵分析',
+desc:'A=diag(π, −π) ⊕ [0 1; 0 0]（即对角元 π、−π、0、1 的 4 阶矩阵），求 sinA。',
+steps:[
+{t:'写特征多项式',body:'φ(λ)=λ⁴−π²λ²（特征值 π、−π、0、0）。',why:'由 Cayley–Hamilton，φ(A)=O，用它把高次幂降下来。'},
+{t:'建立降幂关系',body:'φ(A)=A⁴−π²A²=O ⇒ A⁴=π²A²；A⁵=π²A³；A⁷=π⁴A³；……',why:'偶数次幂交替降回 A²、奇数次幂降回 A³，级数里只剩 A 和 A³。'},
+{t:'代入 sin 的级数',body:'sinA=A−A³/3!+A⁵/5!−A⁷/7!+…<br>=A+(−1/3!+π²/5!−π⁴/7!+…)A³<br>=A+[(sinπ−π)/π³]A³=A−A³/π²。',why:'系数和 Σ(−1)ᵏπ^{2k}/(2k+1)! 恰是 (sinπ−π)/π³，用 sinπ=0 化简。'},
+{t:'写出结果',body:'sinA=A−A³/π² = [[0,0,0,0],[0,0,0,0],[0,0,0,1],[0,0,0,0]]。<br>（只留下最后那个 2×2 块 [0 1; 0 0] 中的右上角 1。）',why:'直接代进 A 的结构算：A 和 A³ 的非零部分只集中在右下 2×2 块，抵消后仅剩一个 1。'}
+]},
+'ex-minv':{ch:'c3',title:'Jordan 形法求 A⁻¹（f(z)=1/z）',source:'PPT 第 3 章例 8（矩阵函数另一定义）',type:'guide',kind:'矩阵分析',
+desc:'A=J₄(2)=[2 1 0 0; 0 2 1 0; 0 0 2 1; 0 0 0 2]，用 f(z)=1/z 求 f(A)=A⁻¹。',
+steps:[
+{t:'确认 Jordan 块结构',body:'A 本身就是一个 4 阶 Jordan 块 J₄(2)，特征值 λ=2，m=4。',why:'Jordan 形法：f(Jᵢ) 是上三角，副对角线上依次是 f′/1!、f″/2!、f‴/3!。'},
+{t:'算 f 及其各阶导数在 λ=2 的值',body:'f(z)=1/z：f(2)=1/2；f′(2)=−1/4；f″(2)=1/4（即 2/8）；f‴(2)=−3/8。',why:'(1/z)′=−1/z²，(1/z)″=2/z³，(1/z)‴=−6/z⁴，代入 z=2。'},
+{t:'按公式填上三角',body:'f(A)=[1/2 −1/4 1/8 −1/16; 0 1/2 −1/4 1/8; 0 0 1/2 −1/4; 0 0 0 1/2]。',why:'主对角 f(2)=1/2，第一条副对角 f′(2)/1!=−1/4，第二条 f″(2)/2!=1/8，第三条 f‴(2)/3!=−3/48=−1/16。'},
+{t:'验证这就是逆',body:'f(A)·A 应等于 I（Jordan 块求逆公式验证）。',why:'(J₄(2))⁻¹ 的上三角结构与此完全一致，验乘一步即可确认。'}
+]},
+'ex-msqrt':{ch:'c3',title:'Jordan 形法求 √A',source:'PPT 第 3 章例 9（f(z)=√z）',type:'guide',kind:'矩阵分析',
+desc:'A 的 Jordan 形为 J=diag(J₁,J₂)，J₁=[1 1; 0 1]（2 阶块，λ=1）、J₂=(2)。求 √A。',
+steps:[
+{t:'对每个 Jordan 块用公式',body:'f(J₁)：λ=1、m=2：<br>f(J₁)=[f(1) f′(1)/1!; 0 f(1)]=[1 1/2; 0 1]。<br>f(J₂)=(√2)。',why:'f(z)=√z 在 λ=1 处：√1=1，(√z)′=1/(2√z)，在 1 处 =1/2。'},
+{t:'按块拼出 f(A)',body:'√A=diag(f(J₁),f(J₂))=[1 1/2 0; 0 1 0; 0 0 √2]。',why:'Jordan 形法：f(A)=P·diag(f(Jᵢ))·P⁻¹；本例 P 可省写，直接用块拼。'},
+{t:'验算',body:'(√A)² 应等于原矩阵（按块的 Jordan 形验证即可）。',why:'平方验证最直接：([1 1/2;0 1])²=[1 1;0 1]=J₁，(√2)²=2。'}
+]},
+'ex-mgrad':{ch:'c3',title:'二次型对向量求导：df/dx',source:'PPT 第 3 章例 2（f=xᵀAx）',type:'guide',kind:'矩阵分析',
+desc:'f(x)=xᵀAx（x∈Rⁿ，A=(aᵢⱼ)），求 df/dx。',
+steps:[
+{t:'写出 f 的展开式',body:'f=Σᵢⱼ aᵢⱼξᵢξⱼ = ξ₁Σⱼa₁ⱼξⱼ+…+ξₖΣⱼaₖⱼξⱼ+…。',why:'对分量求偏导前先展开成显式，避免“对矩阵整体求导”的错误。'},
+{t:'对第 k 个分量求偏导',body:'∂f/∂ξₖ = Σⱼ aₖⱼξⱼ + Σᵢ aᵢₖξᵢ（两项：ξₖ 出现在第 k 行和第 k 列）。',why:'ξₖ 同时出现在“行和”与“列和”里，两项都要留下。'},
+{t:'拼成列向量',body:'df/dx=(∂f/∂ξ₁,…,∂f/∂ξₙ)ᵀ=Ax+Aᵀx=(A+Aᵀ)x。',why:'Σⱼaₖⱼξⱼ 是 (Ax)ₖ，Σᵢaᵢₖξᵢ 是 (Aᵀx)ₖ，两个列向量相加。'},
+{t:'特例：A 对称',body:'Aᵀ=A 时，df/dx=2Ax。',why:'对称时两项合并成 2Ax——最小二乘里“令梯度为 0 ⇒ 法方程”就靠这一式。'}
+]},
+'ex-mchain':{ch:'c3',title:'复合函数求导链式法则',source:'PPT 第 3 章例 3（df/dt=df/dxᵀ·dx/dt）',type:'guide',kind:'矩阵分析',
+desc:'x(t)=(ξ₁(t),…,ξₙ(t))ᵀ，f(t)=f(x(t))，求 df/dt。',
+steps:[
+{t:'全导数展开',body:'df/dt = ∂f/∂ξ₁·dξ₁/dt + … + ∂f/∂ξₙ·dξₙ/dt。',why:'多元复合函数求导的链式法则：每个中间变量贡献一项。'},
+{t:'写成矩阵乘积',body:'=(∂f/∂ξ₁,…,∂f/∂ξₙ)·(dξ₁/dt,…,dξₙ/dt)ᵀ<br>=df/dxᵀ · dx/dt。',why:'行向量 df/dxᵀ 乘列向量 dx/dt 正好把各项配齐——这是把求和写进矩阵乘法的典型手法。'},
+{t:'记忆口诀',body:'“df/dt = (f 对 x 的行梯度) × (x 对 t 的列导数)”。',why:'维度要能相乘：1×n 乘 n×1。写反（列乘行）维度就对不上，是最常见错误。'}
+]},
+'ex-mode':{ch:'c3',title:'齐次微分方程组的通解',source:'PPT 第 3 章例 1（x′=Ax）',type:'guide',kind:'矩阵分析',
+desc:'A=[1 1 0; 1 1 0; 0 0 2]，求 x′(t)=A·x(t) 的通解。',
+steps:[
+{t:'通解公式',body:'齐次方程 x′=Ax 的通解为 x(t)=e^{tA}c（c 为任意常数列向量）。',why:'定理 3.10：e^{tA} 可逆且其列构成基础解系，通解就是 e^{tA} 作用在任意常数向量上。'},
+{t:'求 e^{tA}',body:'本例 e^{tA}=[e^t t·e^t 0; 0 e^t 0; 0 0 e^{2t}]。<br>（2×2 块 [1 1;1 1] 对应 e^t 与 t·e^t，对角元 2 对应 e^{2t}。）',why:'e^{tA} 的求法：对角化/Jordan 形或直接按块展开；[1 1;1 1] 幂等技巧见 ex-midem。'},
+{t:'写出通解',body:'x(t)=e^{tA}c=(c₁e^t+c₂t e^t, c₂e^t, c₃e^{2t})ᵀ。',why:'列乘开：第一行 e^t 与 t·e^t 混出 c₁e^t+c₂te^t，第二行 c₂e^t，第三行 c₃e^{2t}。'}
+]},
+'ex-mode2':{ch:'c3',title:'非齐次微分方程组的初值解',source:'PPT 第 3 章例 2（常数变易法）',type:'guide',kind:'矩阵分析',
+desc:'A=[1 1 0; 1 1 0; 0 0 2]，b(t)=(1,0,e^{2t})ᵀ，x(0)=(−1,1,0)ᵀ。求 x′=Ax+b 满足初值的特解。',
+steps:[
+{t:'初值特解公式',body:'x(t)=e^{tA}·(e^{−t₀A}x₀ + ∫_{t₀}^t e^{−sA}b(s)ds)，t₀=0。',why:'常数变易法：通解 e^{tA}c 中把 c 变成 c(t)，令其为特解，解出 c′(t)=e^{−tA}b(t)。'},
+{t:'求 e^{−sA}b(s)',body:'由 ex-mode 的 e^{sA} 得 e^{−sA}=[e^{−s} −s·e^{−s} 0; 0 e^{−s} 0; 0 0 e^{−2s}]。<br>e^{−sA}b(s)=(e^{−s}·1, 0, e^{−2s}·e^{2s})ᵀ=(e^{−s}, 0, 1)ᵀ。',why:'先把被积函数算出来，再积分——顺序别反。'},
+{t:'积分',body:'∫₀ᵗ e^{−sA}b(s)ds=(1−e^{−t}, 0, t)ᵀ。',why:'∫e^{−s}ds=1−e^{−t}，∫1ds=t，逐分量积。'},
+{t:'代入初值并展开',body:'x(t)=e^{tA}·((−1,1,0)ᵀ+(1−e^{−t},0,t)ᵀ)=e^{tA}·(−e^{−t},1,t)ᵀ<br>=(t e^t−1, e^t, t e^{2t})ᵀ。',why:'e^{tA}·(−e^{−t},1,t)：第一分量 e^t(−e^{−t})+te^t·1=te^t−1，第二 e^t，第三 e^{2t}·t。'}
+]},
+'ex-house':{ch:'c4',title:'Householder 反射矩阵',source:'PPT 第 4 章例 2（x=(1,2,2)ᵀ）',type:'guide',kind:'分解',
+desc:'x=(1,2,2)ᵀ，求 Householder 矩阵 H 使 Hx=||x||₂·e₁。',
+steps:[
+{t:'算 ||x||₂',body:'||x||₂=√(1+4+4)=3，目标 Hx=3e₁=(3,0,0)ᵀ。',why:'Householder 的作用是把向量反射到第一坐标轴方向，长度保持不变。'},
+{t:'构造反射法向量 u',body:'u=(x−||x||e₁)/||x−||x||e₁||。<br>x−3e₁=(−2,2,2)ᵀ，||·||=√(4+4+4)=2√3 ⇒ u=(−1,1,1)/√3。',why:'反射面就是“x 与 3e₁ 的角平分面”，其法向量正是 x−3e₁ 方向。'},
+{t:'代入 H=I−2uuᵀ',body:'H=I−2·(1/3)[1 −1 −1; −1 1 1; −1 1 1]（注意 uuᵀ）<br>= (1/3)[1 2 2; 2 1 −2; 2 −2 1]。',why:'展开 uuᵀ 再乘 −2 加到单位阵上；H 是对称正交对合矩阵（H²=I）。'},
+{t:'验算 Hx',body:'Hx=(1/3)[1 2 2; 2 1 −2; 2 −2 1]·(1,2,2)ᵀ=(1/3)(9,0,0)=(3,0,0) ✓。',why:'目标 Hx=||x||e₁，算一遍确认；这个矩阵正是 PPT 给出的 H=⅓[…]。'}
+]},
+'ex-qrschmidt':{ch:'c4',title:'PPT 例 3：施密特法 QR 分解',source:'PPT 第 4 章例 3（A=[[1,2,2],[2,1,2],[1,2,1]]）',type:'guide',kind:'分解',
+desc:'A=[1 2 2; 2 1 2; 1 2 1]，用施密特正交化求 QR。',
+steps:[
+{t:'取列向量',body:'a₁=(1,2,1)，a₂=(2,1,2)，a₃=(2,2,1)。',why:'QR 的 Q 列就是列向量正交单位化结果。'},
+{t:'第 1 列',body:'q₁=a₁/||a₁||=(1,2,1)/√6，r₁₁=√6。',why:'第一列直接归一化；r₁₁ 是它的长度。'},
+{t:'第 2 列',body:'a₂·q₁=(2+2+2)/√6=√6。<br>u₂=a₂−√6·q₁=(2,1,2)−(1,2,1)=(1,−1,1)，q₂=(1,−1,1)/√3。<br>r₁₂=√6，r₂₂=√3。',why:'减去投影 (a₂·q₁)q₁ 得到与 q₁ 正交的 u₂。'},
+{t:'第 3 列',body:'a₃·q₁=7/√6，a₃·q₂=1/√3。<br>u₃=a₃−(7/√6)q₁−(1/√3)q₂=(1/2,0,−1/2)，q₃=(1/√2,0,−1/√2)。<br>r₁₃=7/√6，r₂₃=1/√3，r₃₃=1/√2。',why:'每多一列多减一个投影；u₃ 与 q₁、q₂ 都正交。'},
+{t:'拼出 Q、R 并验算',body:'Q=[1/√6 1/√3 1/√2; 2/√6 −1/√3 0; 1/√6 1/√3 −1/√2]，<br>R=[√6 √6 7/√6; 0 √3 1/√3; 0 0 1/√2]。<br>验算 QᵀQ=I 且 QR=A。',why:'Q 列两两正交单位化；R 对角元是长度、上三角是投影系数。验 QᵀQ=I 与 QR=A。'}
+]},
+'ex-givens':{ch:'c4',title:'Givens 旋转变换消元',source:'PPT 第 4 章（初等旋转变换）',type:'guide',kind:'分解',
+desc:'用 Givens 旋转 T₁₂(c,s) 把向量 x=(ξ₁,ξ₂) 的第二个分量消成 0（通用流程）。',
+steps:[
+{t:'取旋转参数',body:'c=ξ₁/√(ξ₁²+ξ₂²)，s=ξ₂/√(ξ₁²+ξ₂²)。',why:'旋转角 θ 满足 cosθ、sinθ 恰把 (ξ₁,ξ₂) 转成 (√(ξ₁²+ξ₂²),0)。'},
+{t:'旋转作用',body:'T₁₂(c,s)x=(cξ₁+sξ₂, −sξ₁+cξ₂)=(√(ξ₁²+ξ₂²), 0)。',why:'代入 c、s 后第二分量 −sξ₁+cξ₂ 恒为 0，第一分量是原长度。'},
+{t:'矩阵性质',body:'T₁₂ 是正交阵：det=1、逆=转置、参数 (c,−s)。',why:'旋转保长度保夹角，是正交变换；用它对矩阵做乘法不改变范数。'},
+{t:'推广到矩阵消元',body:'对矩阵 A 做 T₁₂·A 只改变第 1、2 行，可把 (2,1) 位置清零；依次做多个旋转可把下方全部消成上三角。',why:'每次旋转只动两行，逐次消元就是 Givens 版 QR 分解（R=Tₖ…T₁A，Q=它们转置之积）。'}
+]},
+'ex-fullrank':{ch:'c4',title:'满秩分解 A=FG（行阶梯法）',source:'PPT 第 4 章例 1（满秩分解）',type:'guide',kind:'分解',
+desc:'用行阶梯法把 A 分解为 A=FG（F 列满秩、G 行满秩）。',
+steps:[
+{t:'对 A 行化简',body:'对 A 做行初等变换得行阶梯形（或 Hermite 标准形），记主元列位置 j₁,…,j_r。',why:'行变换不改变列之间的线性关系，主元列恰好是列空间的一组基。'},
+{t:'取 F',body:'F=A 的第 j₁,…,j_r 列（原矩阵中的主元列）。',why:'A 的列空间由主元列张成，F 取它们就保证列满秩（r 列线性无关）。'},
+{t:'取 G',body:'G=行阶梯形的 r 个非零行（去掉全零行）。',why:'G 的每一行都是“A 的行向量组”的线性组合，且 r 行线性无关（行满秩）。'},
+{t:'验算',body:'F·G 应等于 A；rank F=r=rank G。',why:'满秩分解不唯一（可插可逆阵 D：A=(FD)(D⁻¹G)），验乘一步确认这一组是对的。'}
+]},
+'ex-hermitestd':{ch:'c4',title:'Hermite 标准形求满秩分解',source:'PPT 第 4 章例 3（A=[[0,0,1],[2,1,1],[2j,j,0]]）',type:'guide',kind:'分解',
+desc:'A=[0 0 1; 2 1 1; 2j j 0]（j=√−1），用 Hermite 标准形求 A=FG。',
+steps:[
+{t:'行变换到 Hermite 标准形',body:'把 A 化成行最简形 B=H·A，并记录列置换 P（若需要）：QAP=BP=[I_r K; 0 0]。',why:'Hermite 标准形让主元列变成单位向量，主元列位置一目了然。'},
+{t:'定 F',body:'F=A 的主元列（例 3 中为前两列）：F=[0 0; 2 1; 2j j]（秩 r=2）。',why:'主元列张成 R(A)，F 列满秩。'},
+{t:'定 G',body:'G=标准形 B 的前 r 个非零行。',why:'标准形前 r 行线性无关，且能线性表出 A 的每一行。'},
+{t:'验算',body:'F·G=A 且 rank F=rank G=2。',why:'满秩分解的两个条件：列满秩+行满秩，验乘通过即完成。'}
+]},
+'ex-svdfull':{ch:'c4',title:'完整奇异值分解（求 U、Σ、V）',source:'PPT 第 4 章例 1（SVD 完整分解）',type:'guide',kind:'分解',
+desc:'A=[1 0 1; 0 1 1; 0 0 0]，求 A 的奇异值分解 A=UΣVᵀ。',
+steps:[
+{t:'算 AᵀA 与 AAᵀ',body:'AᵀA=[1 0 1; 0 1 1; 1 1 2]，AAᵀ=[2 1 0; 1 2 0; 0 0 0]。',why:'V 的列是 AᵀA 的特征向量，U 的列是 AAᵀ 的特征向量；非零特征值相同。'},
+{t:'求奇异值',body:'det(λI−AᵀA) 的非零根：λ=3、1，奇异值 σ₁=√3、σ₂=1（rank=2，还有一个 σ₃=0）。',why:'奇异值=√(AᵀA 非零特征值)；非零奇异值个数=rank A。'},
+{t:'求 V（右奇异向量）',body:'λ=3：v₁=(1,1,2)/√6；λ=1：v₂=(1,−1,0)/√2；λ=0：v₃=(1,1,−1)/√3。<br>V=[v₁ v₂ v₃]。',why:'v₁、v₂ 是 AᵀA 的单位特征向量，v₃ 张成 N(A)。'},
+{t:'求 U（左奇异向量）',body:'u₁=Av₁/σ₁=(1,1,0)/√2；u₂=Av₂/σ₂=(1,−1,0)/√2；u₃ 取与它们正交的 (0,0,1)。<br>U=[1/√2 1/√2 0; 1/√2 −1/√2 0; 0 0 1]。',why:'公式 uᵢ=Avᵢ/σᵢ 给出前 r 列，再补单位正交向量凑成酉阵（本例 AAᵀ 特征向量直接给出）。'},
+{t:'拼结果并验算',body:'A=U·diag(√3,1,0)·Vᵀ。<br>等价外积展开：A=√3·u₁v₁ᵀ+1·u₂v₂ᵀ。',why:'SVD 是“秩一矩阵的和”：A=σ₁u₁v₁ᵀ+…+σᵣuᵣvᵣᵀ，是对 Hermite 谱分解的推广。'}
+]},
+'ex-rankineq':{ch:'c4',title:'证明 rank(A₁+A₂)≤rankA₁+rankA₂',source:'PPT 第 4 章例 4（满秩分解应用）',type:'guide',kind:'证明',
+desc:'A₁、A₂ 同型矩阵。证明 rank(A₁+A₂) ≤ rank A₁ + rank A₂。',
+steps:[
+{t:'把 A₁+A₂ 写成列空间关系',body:'A₁+A₂ 的每一列都是 A₁ 的列与 A₂ 的列之和 ⇒ R(A₁+A₂)⊂R(A₁)+R(A₂)。',why:'和矩阵的列空间被“两个列空间之和”包含——这是证明的出发点。'},
+{t:'用维数不等式',body:'rank(A₁+A₂)=dim R(A₁+A₂) ≤ dim(R(A₁)+R(A₂)) ≤ dim R(A₁)+dim R(A₂)。',why:'子空间和的维数不超过两个维数之和（交可能非零时取不到等号）。'},
+{t:'写出结论',body:'rank(A₁+A₂) ≤ rankA₁ + rankA₂。□',why:'满秩分解的典型应用：把“秩”翻译成“列空间维数”再套维数不等式。'}
+]},
+'ex-gersh2':{ch:'c5',title:'盖尔圆连通分支含特征值',source:'PPT 第 5 章例 5.5/5.6（A=[[10,−8],[5,0]]）',type:'guide',kind:'特征值估计',
+desc:'A=[10 −8; 5 0]，画盖尔圆并分析特征值的位置。',
+steps:[
+{t:'写两个盖尔圆',body:'G₁: |z−10|≤|−8|=8；G₂: |z−0|≤|5|=5。',why:'第 i 圆圆心是对角元、半径是该行非对角元绝对值之和。'},
+{t:'看连通情况',body:'G₁ 覆盖实轴 [2,18]，G₂ 覆盖 [−5,5]，两圆相交 ⇒ 构成一个连通分支。',why:'两圆相交时属于同一连通分支，只能断言“特征值都在并集里”，不能逐个分离。'},
+{t:'求特征值核实',body:'det(λI−A)=|λ−10 8; −5 λ|=λ(λ−10)+40=λ²−10λ+40。<br>特征值 λ=5±j√15，|λ|=√(25+15)=√40≈6.32。',why:'特征值是共轭复数对，模 √40≈6.32 落在并集内；注意它不在 G₂ 内（|λ|>5），说明特征值在 G₁ 部分。'},
+{t:'结论',body:'盖尔圆并集包含全部特征值；连通分支恰含特征值个数（计重数）按分支数分配。本例两个圆连通 ⇒ 2 个特征值都在并集里。',why:'盖尔圆第二定理：k 个圆连通、与其余圆分离时恰含 k 个特征值。判断“能不能分离”是这节的核心技能。'}
+]},
+'ex-cassini':{ch:'c5',title:'Cassini 卵形域估计特征值',source:'PPT 第 5 章定理 5.12（Ostrowski）',type:'guide',kind:'特征值估计',
+desc:'用 Cassini 卵形 Ωᵢⱼ 缩小特征值的范围（通用流程）。',
+steps:[
+{t:'写卵形方程',body:'Ωᵢⱼ={z : |(z−aᵢᵢ)(z−aⱼⱼ)|≤RᵢRⱼ}，Rᵢ、Rⱼ 是第 i、j 行的非对角绝对值之和。',why:'任意特征值落在某个 Cassini 卵形里，它比盖尔圆的并集更“细”。'},
+{t:'判定可逆性',body:'若对所有 i≠j 都有 |aᵢᵢaⱼⱼ|&gt;RᵢRⱼ，则 0 不在任何卵形内 ⇒ det A≠0。',why:'对角元乘积比半径乘积还大，卵形都远离 0，行列式不可能为零。'},
+{t:'结论',body:'特征值在卵形的并集内；必要时结合盖尔圆一起估计得到更紧的界。',why:'盖尔圆看“行”，Cassini 看“两行之间”，两者互补，考试常让先画图再下结论。'}
+]},
+'ex-kroncalc':{ch:'c5',title:'Kronecker 积的计算与性质',source:'PPT 第 5 章例 5.12（A⊗B 与 B⊗A）',type:'guide',kind:'直积',
+desc:'计算 A⊗B 与 B⊗A，并验证一般不等、但特征值集合相同。',
+steps:[
+{t:'按定义展开',body:'A⊗B=(aᵢⱼB)：把 A 的每个元素替换成该元素×B 的块。<br>B⊗A=(bᵢⱼA)：同理把 B 的每个元素替换成 ×A 的块。',why:'Kronecker 积是“块放缩”：每个小块都是同一个 B（或 A）。'},
+{t:'比较两者',body:'一般 A⊗B≠B⊗A（块的位置不同），但两矩阵相似（存在置换矩阵连接），特征值集合相同。',why:'A⊗B 与 B⊗A 相似（性质 10），所以特征值相同、行列式相同。'},
+{t:'套关键性质',body:'(A₁B₁)⊗(A₂B₂)=(A₁⊗A₂)(B₁⊗B₂)；<br>(A⊗B)⁻¹=A⁻¹⊗B⁻¹；rank(A⊗B)=rankA·rankB；<br>det(A⊗B)=(detA)ⁿ(detB)ᵐ；tr(A⊗B)=trA·trB。',why:'这些性质是解矩阵方程的“工具包”；考试填空常考特征值两两相乘与行列式公式。'}
+]},
+'ex-mateq':{ch:'c5',title:'矩阵方程 AX+XB=F 的可解性',source:'PPT 第 5 章例 5.13 与定理 5.29',type:'guide',kind:'矩阵方程',
+desc:'讨论矩阵方程 AX+XB=F 的唯一解条件（用特征值判定）。',
+steps:[
+{t:'行拉直',body:'vec(AXB)=(A⊗Bᵀ)vec X；方程化为 (A⊗Iₙ+Iₘ⊗Bᵀ)vec X=vec F。',why:'把矩阵方程“拉直”成普通线性方程组，可解性就归到系数矩阵的奇异性。'},
+{t:'唯一解条件',body:'(A⊗Iₙ+Iₘ⊗Bᵀ) 可逆 ⇔ λᵢ(A)+μⱼ(B)≠0 对一切 i,j 成立。',why:'A⊗I 与 I⊗Bᵀ 的特征值分别是 λᵢ、μⱼ，相加后只要没有 λᵢ+μⱼ=0 就可逆。'},
+{t:'推论',body:'AX−XA=O 必有非零解（取 λᵢ=μⱼ 即可）；<br>A 与 B 无公共特征值时，[A F; 0 B] 相似于 diag(A,B)。',why:'Lyapunov 型方程 X′=AX+XB 与分块上三角矩阵的化简都源于这个特征值条件。'},
+{t:'矩阵函数解法',body:'A、B 特征值实部均&lt;0 时，唯一解 X=−∫₀^∞ e^{At}Fe^{Bt}dt。',why:'积分形式的闭式解，用在稳定性分析（Lyapunov 方程）里。'}
+]},
+'ex-penrose':{ch:'c6',title:'Penrose 方程与 Moore–Penrose 逆',source:'PPT 第 6 章例 1（基础例）',type:'guide',kind:'广义逆',
+desc:'求 [1 1; 0 0]、[1; 1] 与零矩阵的 Moore–Penrose 逆。',
+steps:[
+{t:'Penrose 四方程',body:'① AXA=A；② XAX=X；③ (AX)ᴴ=AX；④ (XA)ᴴ=XA。<br>满足全部四个的 X 唯一，记 A⁺。',why:'Moore–Penrose 逆是唯一满足四方程的矩阵——这是它的定义，也是验算标准。'},
+{t:'求 [1 1; 0 0]⁺',body:'A=[1 1; 0 0]（行满秩 r=1）：A⁺=Aᴴ(AAᴴ)⁻¹。<br>AAᴴ=[2; 0 0]⁻¹… 直接写结果：A⁺=[1/2 0; 1/2 0]。',why:'行满秩用 A⁺=Aᴴ(AAᴴ)⁻¹；验四方程：AA⁺=[1 0; 0 0] 是投影，AXA=A 成立。'},
+{t:'求 [1; 1]⁺',body:'A=[1;1]（列满秩 r=1）：A⁺=(AᴴA)⁻¹Aᴴ=(1/2)[1 1]。（即 [1/2 1/2]。）',why:'列满秩公式；A⁺A=1 是数，AA⁺=[1/2 1/2; 1/2 1/2] 是秩 1 投影。'},
+{t:'零矩阵',body:'O⁺=O（四方程全满足，唯一性）。',why:'平凡情形也要会：零矩阵的伪逆是零矩阵。'}
+]},
+'ex-columnfull':{ch:'c6',title:'列满秩与行满秩矩阵的伪逆',source:'PPT 第 6 章例 6.1（F⁺、G⁺）',type:'guide',kind:'广义逆',
+desc:'F∈Cᵣ^{m×r} 列满秩、G∈Cᵣ^{r×n} 行满秩，写出 F⁺、G⁺ 并验证性质。',
+steps:[
+{t:'列满秩公式',body:'F⁺=(FᴴF)⁻¹Fᴴ，且 F⁺F=I_r。',why:'FᴴF 是 r×r 可逆（列满秩），公式直接可算；F⁺F=I 是“左逆”。'},
+{t:'行满秩公式',body:'G⁺=Gᴴ(GGᴴ)⁻¹，且 GG⁺=I_r。',why:'GGᴴ 是 r×r 可逆；GG⁺=I 是“右逆”。'},
+{t:'满秩分解的桥梁',body:'若 A=FG（满秩分解），则 A⁺=G⁺F⁺=Gᴴ(FᴴAGᴴ)⁻¹Fᴴ。',why:'这是计算一般矩阵伪逆的核心公式：先满秩分解，再套两端的公式。'}
+]},
+'ex-ginv1':{ch:'c6',title:'{1}-逆的构造（Hermite 标准形法）',source:'PPT 第 6 章例 6.2（{1}-逆）',type:'guide',kind:'广义逆',
+desc:'用 Hermite 标准形构造 A 的 {1}-逆 X∈A{1} 与自反逆 X₀∈A{1,2}（通用流程）。',
+steps:[
+{t:'行变换到标准形',body:'对 A 行变换得 Hermite 标准形 B：QA=B；置换 P 使 QAP=BP=[I_r K; 0 0]。',why:'标准形把主元列变成单位向量，矩阵结构一目了然。'},
+{t:'构造 {1}-逆',body:'任取 L∈C^{(n−r)×(m−r)}：X=P[I_r 0; L 0]Q ∈ A{1}。',why:'直接代入 AXA=A 验证：块结构保证三条乘法链成立，L 的任意性给出所有 {1}-逆。'},
+{t:'取自反逆',body:'取 L=0：X₀=P[I_r 0; 0 0]Q，它同时满足 AX₀A=A、X₀AX₀=X₀ ⇒ X₀∈A{1,2}。',why:'L=0 恰好让中间块“自反”，所以它是自反广义逆（{1,2}-逆）。'}
+]},
+'ex-ginv2':{ch:'c6',title:'分块矩阵 B=[A; A] 的伪逆',source:'PPT 第 6 章例 6.3（B⁺=½[A⁺ A⁺]）',type:'guide',kind:'广义逆',
+desc:'A 为任意 m×n 矩阵，B=[A; A]（2m×n）。证明 B⁺=½[A⁺ A⁺]。',
+steps:[
+{t:'观察结构',body:'B 是把 A 上下叠两次。对任意 x：Bx=(Ax; Ax)。',why:'分块矩阵的乘法按块展开，B 的作用就是“把 Ax 复制两份”。'},
+{t:'验证四方程',body:'取 X=½[A⁺ A⁺]：<br>BXB=[A;A]·½[A⁺ A⁺]·[A;A]… 逐条代入四方程均成立。',why:'分块代入后 A⁺ 的四方程逐条生效，½ 系数保证第三条 (BX)ᴴ=BX 成立。'},
+{t:'结论',body:'B⁺=½[A⁺ A⁺]（唯一性由 Moore–Penrose 逆保证）。',why:'这种“复制块”的伪逆结果是考试速记点；同样思想：行/列重复块的伪逆有明确公式。'}
+]},
+'ex-projgen':{ch:'c6',title:'沿 M 到 L 的投影矩阵',source:'PPT 第 6 章例 6.4（投影矩阵）',type:'guide',kind:'广义逆',
+desc:'C² 中 L=L(α₁)、M=L(α₂)，α₁=(0,1)ᵀ、α₂=(1,−1)ᵀ。求沿 M 到 L 的投影矩阵 P。',
+steps:[
+{t:'按定义写公式',body:'P_{L,M}=(X,O)(X,Y)⁻¹，其中 X=α₁（L 的基）、Y=α₂（M 的基）。',why:'投影矩阵把向量“拍”到 L 且沿 M 方向；公式来自直和分解的坐标计算。'},
+{t:'代入并求逆',body:'(X,Y)=[0 1; 1 −1]（列：α₁、α₂），det=−1。<br>(X,Y)⁻¹=[1 1; 1 0]。',why:'2 阶逆套公式；注意列顺序是 X 在前 Y 在后。'},
+{t:'乘出 P',body:'P=(X,O)(X,Y)⁻¹=[0 0; 1 0]·[1 1; 1 0]=[0 0; 1 1]。',why:'(X,O) 是 2×2 矩阵（第一列 α₁、第二列 0），再做普通乘法。'},
+{t:'验算',body:'P²=P（幂等 ✓）；Pα₁=(0,1)ᵀ=α₁（L 中不动 ✓）；Pα₂=(0,0)（沿 M 拍掉 ✓）。',why:'投影矩阵三件事：幂等、在 L 上恒等、把 M 中向量清零。三条都对就是正确答案。'}
+]},
+'ex-solve1':{ch:'c6',title:'线性方程组的相容性与通解',source:'PPT 第 6 章例 6.9（{1}-逆求解）',type:'guide',kind:'广义逆',
+desc:'A=[1 1 0; 0 0 1; 0 0 0]，b=(l,k,k)ᵀ。讨论 Ax=b 何时有解并求通解。',
+steps:[
+{t:'相容性判据',body:'方程组 Ax=b 有解 ⇔ AA{1}b=b（对某个 {1}-逆，与选取无关）。',why:'AA{1} 是到 R(A) 的投影；b 在列空间里才可能相容。'},
+{t:'找 {1}-逆',body:'取 A{1}=X=[1 0 0; 0 0 0; 0 1 0]ᵀ 型… 直接观察：A 的 1、3 列是标准基，{1}-逆取 X 使 AA⁽¹⁾ 把 b 映回。',why:'本例 A 已接近标准形，{1}-逆可以直接“读”出来，不必走 Hermite 标准形流程。'},
+{t:'判定',body:'AA{1}b=b ⇔ 第三行方程 0·x=k 需 k=0。<br>所以有解 ⇔ k=0（l 任意）。',why:'把方程组写开：x₁+x₂=l、x₃=k、0=0。第三式是唯一障碍。'},
+{t:'求通解',body:'k=0 时：x₃=0，x₁=l−x₂。<br>通解 x=(l,0,0)+η₂(−1,1,0)（η₂ 任意）。',why:'自由变量 x₂ 给出齐次部分 (−1,1,0)，l 决定特解 (l,0,0)。'}
+]},
+'ex-leastsq':{ch:'c6',title:'极小范数最小二乘解 x=A⁺b',source:'PPT 第 6 章例 6.10（满秩分解→A⁺）',type:'guide',kind:'广义逆',
+desc:'A=[−1 2 1; 1 0 1; 0 −2 −2; 3 2 5]，b=(1,0,−1,1)ᵀ。求 Ax=b 的最优解并判定类型。',
+steps:[
+{t:'满秩分解 A=FG',body:'A 的秩 r=2。取 F=A 的主元两列，G 为行阶梯非零行，使 A=FG。',why:'A⁺=G⁺F⁺ 需要满秩分解；本例 G 行满秩、F 列满秩。'},
+{t:'用公式算 A⁺',body:'F⁺=(FᵀF)⁻¹Fᵀ，G⁺=Gᵀ(GGᵀ)⁻¹，A⁺=G⁺F⁺。<br>结果：A⁺=(1/174)[−33 14 19 23; 36 −10 −26 −4; 3 4 −7 19]。',why:'分两步套“列满秩/行满秩”公式，先算两端再相乘。'},
+{t:'算 x₀=A⁺b',body:'x₀=A⁺b=(1/174)(−29,58,29)ᵀ=(1/6)(−1,2,1)ᵀ。',why:'Moore–Penrose 逆的万能解：无论相容与否，x₀ 都是范数最小的（最小二乘）解。'},
+{t:'判定类型',body:'AA⁺b=b？代入验证成立 ⇒ 方程组相容。<br>所以 x₀ 是极小范数解（不是最小二乘解）。',why:'口诀：AA⁺b=b ⇔ 相容 ⇔ 极小范数解；≠b ⇔ 不相容 ⇔ 极小范数最小二乘解。'}
+]}
+};
+
+// ============ 名词释义库（正文可点击术语，这里统一管理） ============
+const GLOSSARY={
+'数域':{t:'数域',def:'对加减乘除封闭的数集；常用 Q（有理数）、R（实数）、C（复数）。',ch:'基础',link:'k0-field'},
+'行列式':{t:'行列式',def:'方阵对应的一个数，记 det A 或 |A|，几何意义是“n 维体积”（有向体积）。',f:'|A|=Σ(−1)^|σ| a₁σ₁⋯aₙσₙ',ch:'基础',link:'k-det'},
+'矩阵':{t:'矩阵',def:'m×n 个数排成的矩形数表，表示线性映射；aᵢⱼ 是第 i 行第 j 列元素。',ch:'基础',link:'k0-mat'},
+'向量':{t:'向量',def:'有序数组（行/列排列），可加、可数乘，几何上带方向与大小。',ch:'基础',link:'k0-vec'},
+'线性方程组':{t:'线性方程组',def:'形如 Ax=b 的方程组，未知数都只出现一次（线性）。',ch:'基础',link:'k0-solve'},
+'高斯消元':{t:'高斯消元',def:'用初等行变换把增广矩阵化成行阶梯形，再回代求解的机械化算法。',ch:'基础'},
+'秩':{t:'秩',def:'矩阵线性无关行（列）的最大个数，也是列空间维数。',f:'rank(A)=dim R(A)',ch:'基础',link:'k0-rank'},
+'逆矩阵':{t:'逆矩阵',def:'满足 AA⁻¹=A⁻¹A=I 的矩阵；存在 ⇔ det A≠0 ⇔ 满秩。',f:'A⁻¹=adj(A)/det A',ch:'基础',link:'k0-inv'},
+'单位矩阵':{t:'单位矩阵',def:'对角元全 1、其余 0 的方阵 I，乘任何矩阵不变，相当于“1”。',f:'IA=AI=A',ch:'基础'},
+'零矩阵':{t:'零矩阵',def:'所有元素都为 0 的矩阵 O。',f:'AO=OA=O',ch:'基础'},
+'转置':{t:'转置',def:'把矩阵的行与列互换得到 Aᵀ。',f:'(Aᵀ)ᵢⱼ=aⱼᵢ；(AB)ᵀ=BᵀAᵀ',ch:'基础'},
+'共轭转置':{t:'共轭转置',def:'先逐元素取共轭再转置，记 Aᴴ，是复数矩阵的“转置”。',f:'Aᴴ=(Ā)ᵀ',ch:'基础'},
+'对角矩阵':{t:'对角矩阵',def:'只在主对角线有非零元、其余全 0 的方阵。',f:'diag(d₁,…,dₙ)',ch:'基础'},
+'内积':{t:'内积',def:'两个向量对应分量相乘再求和得到的数，用来量“长度和夹角”。',f:'⟨x,y⟩=xᵀy（实）；xᴴy（复）',ch:'基础',link:'k0-inner'},
+'正交':{t:'正交',def:'两个向量内积为 0（垂直）；矩阵正交 ⇔ QᵀQ=I。',f:'⟨x,y⟩=0',ch:'基础'},
+'线性无关':{t:'线性无关',def:'一组向量只有当系数全为 0 时线性组合才等于 0；否则线性相关。',ch:'基础'},
+'线性相关':{t:'线性相关',def:'存在不全为 0 的系数使线性组合为 0，即“有一个能被其余表示”。',ch:'基础'},
+'特征值':{t:'特征值',def:'满足 Ax=λx（x≠0）的数 λ，即 det(λI−A)=0 的根。',f:'det(λI−A)=0',ch:'基础',link:'k0-eig'},
+'特征向量':{t:'特征向量',def:'被 A 作用后方向不变、只伸缩的非零向量 x（Ax=λx）。',ch:'基础',link:'k0-eig'},
+'二次型':{t:'二次型',def:'每个未知数都带平方或两两相乘的齐二次多项式，写成 xᵀAx（A 对称）。',f:'f=xᵀAx',ch:'基础',link:'k0-form2'},
+'正定矩阵':{t:'正定矩阵',def:'对称阵且对一切 x≠0 有 xᵀAx>0（所有顺序主子式>0）。',f:'xᵀAx>0',ch:'基础'},
+'特征多项式':{t:'特征多项式',def:'φ(λ)=det(λI−A)，它的根就是全部特征值。',f:'φ(λ)=det(λI−A)',ch:'基础'},
+'初等行变换':{t:'初等行变换',def:'交换两行、某行乘非零数、某行加另一行的倍数；不改变方程组的解。',ch:'基础'},
+'线性空间':{t:'线性空间',def:'对加法、数乘封闭且满足八条公理的集合 V（如 Rⁿ、C^{n×n}）。',ch:'第1章',link:'k-lin'},
+'子空间':{t:'子空间',def:'线性空间 V 中自身对加法数乘仍封闭的非空子集。',ch:'第1章',link:'k-sub'},
+'线性变换':{t:'线性变换',def:'保持加法与数乘的映射 T：T(kx+ℓy)=kT(x)+ℓT(y)。',ch:'第1章',link:'k-trans'},
+'基':{t:'基',def:'线性无关且张成整个空间的向量组；基的个数=维数。',ch:'第1章',link:'k-basis'},
+'维数':{t:'维数',def:'线性空间基所含向量的个数，记 dim V。',f:'dim V=n',ch:'第1章'},
+'特征子空间':{t:'特征子空间',def:'同一特征值 λ 的全部特征向量加零向量组成的子空间 V_λ。',f:'V_λ={x:(λI−A)x=0}',ch:'第1章'},
+'可对角化':{t:'可对角化',def:'存在可逆 P 使 P⁻¹AP 为对角阵；充要：每个特征值几何重数=代数重数。',f:'A=PΛP⁻¹',ch:'第1章'},
+'Jordan 标准形':{t:'Jordan 标准形',def:'由 Jordan 块拼成的分块对角形，是相似意义下的最简标准形。',ch:'第1章',link:'k-jordan'},
+'最小多项式':{t:'最小多项式',def:'使 m(A)=O 的次数最低的首一多项式，决定矩阵的结构。',f:'m(A)=O',ch:'第1章',link:'k-minpoly'},
+'不变子空间':{t:'不变子空间',def:'线性变换作用后仍留在其中的子空间：x∈W ⇒ Tx∈W。',ch:'第1章',link:'k-invsub'},
+'欧氏空间':{t:'欧氏空间',def:'配了正定内积的实线性空间（实数“几何空间”的推广）。',ch:'第1章'},
+'酉空间':{t:'酉空间',def:'配了正定内积的复线性空间。',ch:'第1章'},
+'正规矩阵':{t:'正规矩阵',def:'满足 AᴴA=AAᴴ 的矩阵；这是可酉对角化的充要条件。',f:'AᴴA=AAᴴ',ch:'第1章'},
+'酉矩阵':{t:'酉矩阵',def:'满足 UᴴU=I 的复矩阵（实矩阵情形就是正交矩阵）。',f:'UᴴU=I',ch:'第1章'},
+'相似矩阵':{t:'相似矩阵',def:'A 与 B 满足 A=P⁻¹BP（P 可逆），称相似，特征值相同。',f:'A~B ⇔ A=P⁻¹BP',ch:'第1章'},
+'初等因子':{t:'初等因子',def:'把特征多项式按 Jordan 块拆分得到的因子组，唯一决定 Jordan 形。',ch:'第1章'},
+'广义特征向量':{t:'广义特征向量',def:'满足 (λI−A)ᵏx=0（k≥1）的向量，是 Jordan 链的后续列。',f:'(λI−A)xⱼ=−x_{j−1}',ch:'第1章'},
+'Cayley–Hamilton':{t:'Cayley–Hamilton 定理',def:'矩阵满足自己的特征多项式：φ(A)=O，高次幂可借此降次。',f:'φ(A)=O',ch:'第1章',link:'k-cayley'},
+'幂等矩阵':{t:'幂等矩阵',def:'满足 A²=A 的矩阵；投影矩阵的代数刻画。',f:'A²=A',ch:'第1章'},
+'向量范数':{t:'向量范数',def:'给向量量“长度”的映射：非负、齐次、三角不等式三条公理。',f:'||x||≥0；||kx||=|k|·||x||；||x+y||≤||x||+||y||',ch:'第2章',link:'k-vnorm'},
+'矩阵范数':{t:'矩阵范数',def:'矩阵空间上的范数，通常加相容性 ||AB||≤||A||·||B||。',ch:'第2章'},
+'谱半径':{t:'谱半径',def:'全部特征值模的最大值，判断矩阵级数与迭代收敛。',f:'ρ(A)=max|λᵢ|',ch:'第2章',link:'k-spectral'},
+'范数等价':{t:'范数等价',def:'任意两种范数相差有界倍数，收敛性判断与选哪种范数无关。',f:'c₁||x||≤||x||′≤c₂||x||',ch:'第2章'},
+'条件数':{t:'条件数',def:'衡量线性方程组对误差的敏感程度，越大越“病态”。',f:'cond(A)=||A||·||A⁻¹||',ch:'第2章',link:'k-cond'},
+'加权范数':{t:'加权范数',def:'用对称正定矩阵 A 定义的长度。',f:'||x||_A=√(xᵀAx)',ch:'第2章'},
+'从属范数':{t:'从属范数',def:'由向量范数导出的算子范数，也是“矩阵把单位球拉多长”。',f:'||A||=max_{||x||=1}||Ax||',ch:'第2章'},
+'矩阵函数':{t:'矩阵函数',def:'把函数 f 作用到矩阵上得到的 f(A)，由幂级数或 Jordan 形定义。',ch:'第3章',link:'k-mfunc'},
+'矩阵指数':{t:'矩阵指数',def:'e^A=ΣAᵏ/k!，是微分方程组 x′=Ax 的解的核心。',f:'e^A=I+A+A²/2!+…',ch:'第3章',link:'k-exp'},
+'矩阵级数收敛':{t:'矩阵级数收敛',def:'幂级数 ΣcₖAᵏ 的收敛判定：谱半径小于收敛半径。',f:'ρ(A)&lt;r ⇒ 收敛',ch:'第3章',link:'k-converge'},
+'迹':{t:'矩阵的迹',def:'主对角线元素之和，等于全部特征值之和。',f:'tr A=Σaᵢᵢ=Σλᵢ',ch:'第3章'},
+'QR 分解':{t:'QR 分解',def:'把 A 分解为 A=QR，Q 酉（正交）、R 上三角。',f:'A=QR',ch:'第4章',link:'k-qr'},
+'Householder 变换':{t:'Householder 变换',def:'镜面反射矩阵，可一次把向量的多余分量清零。',f:'H=I−2uuᴴ',ch:'第4章',link:'k-house'},
+'Givens 变换':{t:'Givens 变换',def:'平面旋转矩阵，一次消掉一个元素。',f:'T₁₂(c,s)',ch:'第4章'},
+'奇异值':{t:'奇异值',def:'AᴴA 特征值的算术平方根，衡量“拉伸倍数”。',f:'σᵢ=√λᵢ(AᴴA)',ch:'第4章',link:'k-svd'},
+'奇异值分解':{t:'奇异值分解',def:'把 A 写成“旋转×拉伸×旋转”的标准分解。',f:'A=UΣVᵀ',ch:'第4章',link:'k-svd'},
+'满秩分解':{t:'满秩分解',def:'把 A 分解为 A=FG，F 列满秩、G 行满秩。',f:'A=FG',ch:'第4章',link:'k-rankfact'},
+'盖尔圆':{t:'盖尔圆',def:'以对角元为圆心、该行非对角绝对值之和为半径的圆，特征值必落在其中。',f:'Gᵢ:{|z−aᵢᵢ|≤Rᵢ}',ch:'第4章',link:'k-gersh'},
+'Kronecker 积':{t:'Kronecker 积',def:'把每个元素替换成“该元素×整个矩阵”的分块运算，也称直积。',f:'A⊗B=(aᵢⱼB)',ch:'第5章',link:'k-kron'},
+'Rayleigh 商':{t:'Rayleigh 商',def:'对称矩阵特征值的变分刻画：最大/最小特征值=商的最大/最小值。',f:'R(x)=xᵀAx/xᵀx',ch:'第5章',link:'k-rayleigh'},
+'惯性指数':{t:'惯性指数',def:'规范形中正系数个数 p、负系数个数 q（正、负惯性指数）。',ch:'第5章',link:'k-inertia'},
+'Cassini 卵形':{t:'Cassini 卵形',def:'含特征值的卵形域，比盖尔圆的并集更紧。',f:'|(z−aᵢᵢ)(z−aⱼⱼ)|≤RᵢRⱼ',ch:'第5章'},
+'广义逆':{t:'广义逆',def:'对不可逆矩阵也“求逆”的推广，满足部分 Penrose 方程。',f:'AXA=A',ch:'第6章',link:'k-ginv'},
+'Moore–Penrose 逆':{t:'Moore–Penrose 逆',def:'满足全部四个 Penrose 方程的矩阵，唯一，记 A⁺。',f:'AXA=A；XAX=X；(AX)ᴴ=AX；(XA)ᴴ=XA',ch:'第6章',link:'k-mp'},
+'最小二乘解':{t:'最小二乘解',def:'使 ||Ax−b||₂ 最小的解；不相容方程组的最优近似。',f:'min ||Ax−b||₂',ch:'第6章',link:'k-leastsq'},
+'投影矩阵':{t:'投影矩阵',def:'幂等矩阵 P（P²=P），把向量“拍”到子空间上。',f:'P²=P',ch:'第6章',link:'k-proj'}
+};
+
+// ============ 练习题库 ============
+const QUIZ_TF=[
+{id:'tf1',ch:'c1',q:'次数等于 m（m≥1）的实系数多项式集合，对多项式加法与数乘构成 R 上线性空间。',ans:false,why:'错。零多项式不在“次数等于 m”的集合里（线性空间必须有零元）；而且两个 m 次多项式相加可能降次，不封闭。'},
+{id:'tf2',ch:'c1',q:'实对称矩阵的集合，对矩阵加法和实数与矩阵乘法构成实数域上的线性空间。',ans:true,why:'对。对称阵相加仍对称、数乘仍对称，且含零矩阵，封闭性成立。'},
+{id:'tf3',ch:'c1',q:'设 V₁、V₂ 是线性空间 V 的两个子空间，则 dimV₁+dimV₂ = dim(V₁+V₂)。',ans:false,why:'错。漏了交的维数。正确公式：dim(V₁+V₂)+dim(V₁∩V₂)=dimV₁+dimV₂。'},
+{id:'tf4',ch:'c1',q:'欧氏空间中不同基的度量矩阵合同。',ans:true,why:'对。换基时度量矩阵 G′=PᵀGP，这正是合同变换。'},
+{id:'tf5',ch:'c1',q:'线性变换在不同基下的矩阵相似。',ans:true,why:'对。B=P⁻¹AP（P 为过渡矩阵），是相似关系。'},
+{id:'tf6',ch:'c1',q:'欧氏空间中不同基的度量矩阵相似。',ans:false,why:'错。度量矩阵换基是合同关系（PᵀGP），一般不同时相似。合同≠相似。'},
+{id:'tf7',ch:'c1',q:'n 阶方阵 A 酉相似于对角矩阵的充要条件是 A 为正规矩阵。',ans:true,why:'对。这是酉对角化定理。正规矩阵 = AAᴴ=AᴴA（含 Hermite、酉阵等）。'},
+{id:'tf8',ch:'c1',q:'设 A∈Cⁿˣⁿ，A 相似于对角矩阵的充要条件是 A 为正规矩阵。',ans:false,why:'错。相似对角化 ⇔ 每个特征值的几何重数=代数重数；正规矩阵只是“酉相似对角化”的充要条件，比相似对角化强。'},
+{id:'tf9',ch:'c3',q:'det eᴬ = e^(det A)。',ans:false,why:'错。正确公式：det eᴬ = e^(tr A)。因为 eᴬ 的特征值是 e^λᵢ，行列式=e^(λ₁+…+λₙ)=e^(trA)。'},
+{id:'tf10',ch:'c4',q:'任意矩阵都有唯一的奇异值分解。',ans:false,why:'错。存在性成立（任何矩阵都有 SVD），但唯一性不成立：奇异值唯一，U、V 不唯一（可换符号等）。'},
+{id:'tf11',ch:'c4',q:'矩阵 A 有唯一 LDU 分解的充要条件是 A 可逆。',ans:false,why:'错。充要条件是 A 的顺序主子式都不为零（资料口径：前 n−1 个顺序主子式非零）。可逆不一定满足主子式条件。'},
+{id:'tf12',ch:'c6',q:'矩阵 A 有唯一 {1}-逆的充要条件是 A 为可逆方阵。',ans:true,why:'对。AXA=A 的解唯一 ⇔ A 可逆（此时唯一解就是 A⁻¹）。'},
+{id:'tf13',ch:'c1',q:'设 A∈Cᵐˣⁿ，B∈Cⁿˣᵖ，则 R(AB)⊂R(A)。',ans:true,why:'对。AB 的每一列都是 A 的列的线性组合，所以列空间被 A 的列空间包含。'},
+{id:'tf14',ch:'c1',q:'设 A∈Cᵐˣⁿ，B∈Cⁿˣᵖ，则 N(B)⊂N(AB)。',ans:true,why:'对。Bx=0 ⇒ ABx=A·0=0，所以 B 的零空间含于 AB 的零空间。'},
+{id:'tf15',ch:'c2',q:'设 A∈Cⁿˣⁿ，则对任意矩阵范数 ||·|| 都有 ||A|| ≥ ρ(A)。',ans:true,why:'对。谱半径不超过任何矩阵范数，这是谱半径的基本性质。'},
+{id:'tf16',ch:'c2',q:'按行严格对角占优的矩阵一定是可逆矩阵。',ans:true,why:'对。对角占优时 0 不在任何盖尔圆内（0 到圆心的距离 > 半径），由盖尔圆定理行列式≠0。'},
+{id:'tf17',ch:'c4',q:'初等旋转矩阵可以表示为若干初等反射矩阵的乘积。',ans:true,why:'对。旋转 = 两次反射的组合（镜面反射的复合是旋转），任何 Givens 旋转都能拆成两个 Householder 反射。'},
+{id:'tf18',ch:'c4',q:'任一初等反射矩阵可以表示为两个初等旋转矩阵的乘积。',ans:false,why:'错。反射的行列式为 −1，旋转的行列式为 +1，两个旋转乘积行列式仍为 +1，不可能等于反射。'},
+{id:'tf19',ch:'c4',q:'设 A∈Rⁿˣⁿ，若 A 的 n 个盖尔圆互不相交，则 A 可以相似对角化。',ans:true,why:'对。n 个圆互不相交 ⇒ 每个圆恰含一个特征值 ⇒ 特征值两两不同 ⇒ 可对角化。'},
+{id:'tf20',ch:'c1',q:'设 f(λ)=det(λI−A) 是 A 的特征多项式，则 f(A)=O。',ans:true,why:'对。Cayley–Hamilton 定理：矩阵满足自己的特征多项式。'},
+{id:'tf21',ch:'c1',q:'实对称矩阵的特征值都是实数。',ans:true,why:'对。这是实对称矩阵的基本性质（证明：取共轭转置比较 xᴴAx）。'},
+{id:'tf22',ch:'c1',q:'Hermite 矩阵的特征值都是实数，且属于不同特征值的特征向量必正交。',ans:true,why:'对。Aᴴ=A 时特征值实数；不同特征值对应特征向量正交（与实对称情形同理）。'},
+{id:'tf23',ch:'c1',q:'相似矩阵必有相同的最小多项式。',ans:true,why:'对。相似矩阵特征多项式相同、最小多项式也相同（这是必要条件）。'},
+{id:'tf24',ch:'c1',q:'最小多项式相同的两个矩阵一定相似。',ans:false,why:'错。最小多项式相同只是相似的必要非充分条件。例：diag(2,3,3) 与 diag(2,2,3) 的最小多项式都是 (λ−2)(λ−3)，但特征多项式不同，不相似。'},
+{id:'tf25',ch:'c2',q:'A 是收敛矩阵（Aᵏ→O）的充要条件是 ρ(A)&lt;1。',ans:true,why:'对。谱半径小于 1 ⇔ 矩阵序列收敛于零矩阵，是收敛矩阵的核心判据。'},
+{id:'tf26',ch:'c4',q:'任何实对称矩阵都正交相似于对角矩阵。',ans:true,why:'对。实对称矩阵可正交对角化：存在正交 P 使 PᵀAP 为对角阵。'},
+{id:'tf27',ch:'c6',q:'对任意可乘的 A、B，恒有 (AB)⁺=B⁺A⁺。',ans:false,why:'错。一般 (AB)⁺≠B⁺A⁺（PPT 反例：A=[1 0]，B=[1;1]，(AB)⁺=[1] 而 B⁺A⁺=[1/2]）。'},
+{id:'tf28',ch:'c1',q:'对任意矩阵 A，恒有 rank(AᴴA)=rank A。',ans:true,why:'对。由 N(AᴴA)=N(A)（Ax=0 ⇔ AᴴAx=0）且两者列数相同即得。'},
+{id:'tf29',ch:'c5',q:'设 A∈Cᵐˣⁿ、B∈Cⁿˣᵐ，则 det(Iₘ+AB)=det(Iₙ+BA)。',ans:true,why:'对。这是 Sylvester 行列式恒等式（分块拟 LU 分解的推论，PPT 例 4.3）。'},
+{id:'tf30',ch:'c5',q:'对任意矩阵 A，其特征值模的平方和不超过 ||A||_F²。',ans:true,why:'对。Schur 不等式 Σ|λᵢ|²≤||A||_F²，等号成立 ⇔ A 为正规矩阵。'}
+];
+const QUIZ_FILL=[
+{id:'fl1',ch:'c2',q:'设 A=[0 c c; c 0 c; c c 0]（c 为实数）。A 为收敛矩阵的充要条件是 |c| &lt; ______。',ans:'1/2',unit:'',why:'A 的特征值：2c、−c、−c。收敛 ⇔ ρ(A)&lt;1 ⇔ max(2|c|,|c|)&lt;1 ⇔ |c|&lt;1/2。'},
+{id:'fl2',ch:'c4',q:'设 A=[1 0; 0 1; 1 1]，则 A 的全部奇异值为______（用逗号分隔，降序）。',ans:'√3,1',why:'AᵀA=[2 1;1 2]，特征值 3、1，奇异值=√特征值，得 √3、1。'},
+{id:'fl3',ch:'c1',q:'设 A=[−1 1 0; −4 3 0; 1 0 2]，则 A 的 Jordan 标准形为______（填 3×3 矩阵）。',ans:'[[1,1,0],[0,1,0],[0,0,2]]',why:'特征多项式 (λ−1)²(λ−2)；λ=1 几何重数 1 ⇒ 一个 2 阶 Jordan 块 J₂(1)，加上 J₁(2)。'},
+{id:'fl4',ch:'c2',q:'n 维向量 x=(1,1,…,1) 的 l₁、l₂、l∞ 范数分别为______（逗号分隔）。',ans:'n,√n,1',why:'l₁=n 个 1 相加 = n；l₂=√(n·1²)=√n；l∞=max(1,…,1)=1。'},
+{id:'fl5',ch:'c3',q:'设 A=[1 −2; −1 0]，B=[0 1; 1 0]，则 A⊗B 的全部特征值为______（逗号分隔，顺序不限）。',ans:'2,-2,1,-1',why:'A 的特征值 2、−1；B 的特征值 1、−1。A⊗B 的特征值=两两相乘：{2,−2,1,−1}。'},
+{id:'fl6',ch:'c2',q:'矩阵 A 是收敛矩阵的充要条件：谱半径 ρ(A) ______ 1。',ans:'<1',why:'Aᵏ→O ⇔ ρ(A)&lt;1。这是收敛矩阵的核心判据。'},
+{id:'fl7',ch:'c5',q:'设 A=[10 1 2 3; 5 30 1 2; 10 3 −10 5; 2 −3 −1 −40]，则第一个盖尔圆 G₁: |z−10|≤______。',ans:'6',why:'G₁ 半径=第 1 行非对角元绝对值之和 |1|+|2|+|3|=6。'},
+{id:'fl8',ch:'c4',q:'设 rank A=r，则 A 的非零奇异值个数为______。',ans:'r',why:'非零奇异值个数=rank A；奇异值总数=列数。'},
+{id:'fl9',ch:'c2',q:'矩阵 A 的条件数 cond(A)=______·||A⁻¹||（填范数记号）。',ans:'||A||',why:'cond(A)=||A||·||A⁻¹||，是衡量矩阵病态程度的量。'},
+{id:'fl10',ch:'c6',q:'相容方程组 Ax=b 的极小范数解为 x=______。',ans:'A⁺b',why:'x=A⁺b：相容时它是范数最小的解（极小范数解）；不相容时它是极小范数最小二乘解。'}
+];
+
+// ============ 数值行列式（递归，用于校验） ============
+function detNum(A){
+  const n=A.length;
+  if(n===1)return A[0][0];
+  if(n===2)return A[0][0]*A[1][1]-A[0][1]*A[1][0];
+  let d=0;
+  for(let j=0;j<n;j++){
+    const minor=A.slice(1).map(r=>r.filter((_,jj)=>jj!==j));
+    d+=((j%2)?-1:1)*A[0][j]*detNum(minor);
+  }
+  return d;
+}
+function minorOf(A,i,j){return A.filter((_,ii)=>ii!==i).map(r=>r.filter((_,jj)=>jj!==j));}
+
+// ============ 行列式分步：展开（按行/按列） ============
+// 返回 {terms:[{i,j,sign,coef,minorVal,termVal,minorMat,sub(嵌套步骤|null)}], det}
+function expandDetSteps(A,i0,j0,dir){
+  const n=A.length;
+  const terms=[];
+  for(let t=0;t<n;t++){
+    const i=dir==='row'?i0:t, j=dir==='col'?j0:t;
+    const a=A[i][j];
+    if(Math.abs(a)<1e-12)continue;
+    const sign=((i+j)%2?-1:1);
+    const Mm=minorOf(A,i,j);
+    let sub=null, minorVal;
+    if(Mm.length===2){
+      minorVal=Mm[0][0]*Mm[1][1]-Mm[0][1]*Mm[1][0];
+      sub={rows:Mm,val:minorVal,formula:'a₁₁a₂₂−a₁₂a₂₁'};
+    }else if(Mm.length===3){
+      // 3阶子式：递归展开
+      const rec=expandDetSteps(Mm,0,0,'row');
+      minorVal=rec.det;
+      sub={rows:Mm,val:minorVal,terms:rec.terms};
+    }else{
+      minorVal=detNum(Mm);
+      sub={rows:Mm,val:minorVal};
+    }
+    terms.push({i,j,sign,coef:a,minorVal,termVal:sign*a*minorVal,minorMat:Mm,sub});
+  }
+  const det=terms.reduce((s,x)=>s+x.termVal,0);
+  return {terms,det};
+}
+
+// ============ 行列式分步：化为上三角 ============
+function triDetSteps(A){
+  const n=A.length;const B=A.map(r=>r.slice());const steps=[];let sign=1;
+  for(let k=0;k<n-1;k++){
+    // 找主元
+    let p=-1;
+    for(let r=k;r<n;r++)if(Math.abs(B[r][k])>1e-12){p=r;break;}
+    if(p===-1){
+      steps.push({op:'无主元',mat:B.map(r=>r.slice()),why:'第 '+(k+1)+' 列从第 '+(k+1)+' 行往下全是 0：说明这 n 行线性相关，行列式为 0。',zero:true});
+      return {steps,det:0,sign};
+    }
+    if(p!==k){
+      [B[k],B[p]]=[B[p],B[k]];sign*=-1;
+      steps.push({op:'R'+(k+1)+' ↔ R'+(p+1),mat:B.map(r=>r.slice()),why:'主元位置 a<sub>'+(k+1)+(k+1)+'</sub>=0，交换两行找一个非零主元。<b>交换两行，行列式变号</b>（记 sign 乘 −1）。'});
+    }
+    const piv=B[k][k];
+    for(let r=k+1;r<n;r++){
+      if(Math.abs(B[r][k])<1e-12)continue;
+      const m=B[r][k]/piv;
+      for(let c=0;c<n;c++)B[r][c]-=m*B[k][c];
+      steps.push({op:'R'+(r+1)+' ← R'+(r+1)+' − '+fmt(m)+'·R'+(k+1),mat:B.map(r=>r.slice()),why:'用主元消去下方元素：<b>某行加上另一行的倍数，行列式不变</b>。这样逐步把矩阵削成上三角。'});
+    }
+  }
+  let d=sign;for(let k=0;k<n;k++)d*=B[k][k];
+  return {steps,det:d,sign};
+}
+
+// ============ 特征多项式（符号运算，系数数组：c0+c1λ+...+cnλⁿ） ============
+function polyMul(p,q){const r=new Array(p.length+q.length-1).fill(0);for(let i=0;i<p.length;i++)for(let j=0;j<q.length;j++)r[i+j]+=p[i]*q[j];return r;}
+function polyAdd(p,q){const r=p.slice();for(let i=0;i<q.length;i++)r[i]=(r[i]||0)+q[i];return r;}
+function polyNeg(p){return p.map(x=>-x);}
+function polyScale(p,k){return p.map(x=>x*k);}
+function polySub(p,q){return polyAdd(p,polyNeg(q));}
+function polyStr(p,varName){ // 显示多项式
+  const v=varName||'λ';const parts=[];
+  for(let k=p.length-1;k>=0;k--){
+    const c=p[k];if(Math.abs(c)<1e-12)continue;
+    let s='';
+    if(k===0)s+=fmt(c);
+    else{
+      const absC=Math.abs(c);
+      if(absC===1)s=(k===p.length-1?'':(c<0?'−':''))+v;
+      else s=(c<0?'−':'')+fmt(absC)+v;
+      if(k>1)s+='<sup>'+k+'</sup>';
+    }
+    parts.push(s);
+  }
+  return parts.length?parts.join(' + ').replace(/\+ −/g,'−').replace(/\+\s*−/g,'−'):'0';
+}
+function polyEvalMatrix(p,A){ // 计算 f(A)
+  const n=A.length;const Z=Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>i===j?p[0]:0));
+  let pow=A.map(r=>r.slice());
+  for(let k=1;k<p.length;k++){
+    if(Math.abs(p[k])>1e-12)for(let i=0;i<n;i++)for(let j=0;j<n;j++)Z[i][j]+=p[k]*pow[i][j];
+    if(k<p.length-1){
+      const np=Array.from({length:n},()=>new Array(n).fill(0));
+      for(let i=0;i<n;i++)for(let kk=0;kk<n;kk++)for(let j=0;j<n;j++)np[i][j]+=pow[i][kk]*A[kk][j];
+      pow=np;
+    }
+  }
+  return Z;
+}
+// 符号行列式展开：cell = {lp:λ系数, c:常数}
+function charpolySteps(A){
+  const n=A.length;
+  const M=[];
+  for(let i=0;i<n;i++){const r=[];for(let j=0;j<n;j++)r.push({lp:i===j?1:0,c:i===j?-A[i][j]:-A[i][j]});M.push(r);}
+  const steps=[];
+  steps.push({t:'写出 λI−A',body:'把单位阵乘 λ 再减 A：对角位置是 λ−a<sub>ii</sub>，非对角位置是 −a<sub>ij</sub>。'});
+  // 选展开行：第一行（含 0 优先）
+  const row0=0;
+  const subSteps=[];
+  for(let j=0;j<n;j++){
+    const cell=M[row0][j];
+    if(Math.abs(cell.lp)<1e-12&&Math.abs(cell.c)<1e-12)continue;
+    const Mm=M.filter((_,ii)=>ii!==row0).map(r=>r.filter((_,jj)=>jj!==j));
+    const sign=(row0+j)%2?-1:1;
+    let termPoly;
+    let minorDesc;
+    if(Mm.length===2){
+      const [[a,b],[c,d]]=Mm;
+      // det = (a.lp λ + a.c)(d.lp λ + d.c) − (b.lp λ + b.c)(c.lp λ + c.c)
+      const p1=polyMul([a.c,a.lp],[d.c,d.lp]);
+      const p2=polyMul([b.c,b.lp],[c.c,c.lp]);
+      termPoly=polySub(p1,p2);
+      minorDesc=polyStr(termPoly);
+    }else{
+      const rec=charpolyExpand(Mm,0);
+      termPoly=rec.poly;
+      minorDesc=polyStr(termPoly);
+    }
+    const cellPoly=[cell.c,cell.lp];
+    const full=polyMul(cellPoly,termPoly);
+    const signed=sign>0?full:polyNeg(full);
+    subSteps.push({j,cellTxt:(cell.lp?polyStr(cellPoly):fmt(cell.c)),minorDesc,termPolyStr:polyStr(termPoly),poly:signed,sign});
+  }
+  let f=polyNeg(polyNeg(new Array(n+1).fill(0)));
+  f=new Array(n+1).fill(0);
+  for(const s of subSteps)f=polyAdd(f,s.poly);
+  // 补全展示：每项 (−1)^{i+j}(λ−a_ij)·(子式)
+  return {steps,subSteps,f,A};
+}
+
+// 3阶符号展开递归（沿第0行）
+function charpolyExpand(M,row){
+  let poly=new Array(M[0].length+1).fill(0);
+  for(let j=0;j<M[0].length;j++){
+    const cell=M[row][j];
+    if(Math.abs(cell.lp)<1e-12&&Math.abs(cell.c)<1e-12)continue;
+    const Mm=M.filter((_,ii)=>ii!==row).map(r=>r.filter((_,jj)=>jj!==j));
+    const sign=(row+j)%2?-1:1;
+    let m;
+    if(Mm.length===2){
+      const [[a,b],[c,d]]=Mm;
+      m=polySub(polyMul([a.c,a.lp],[d.c,d.lp]),polyMul([b.c,b.lp],[c.c,c.lp]));
+    }else{
+      m=charpolyExpand(Mm,0).poly;
+    }
+    const term=polyMul([cell.c,cell.lp],m);
+    poly=polyAdd(poly,sign>0?term:polyNeg(term));
+  }
+  return {poly};
+}
+
+// ============ 高斯消元分步 ============
+function gaussSteps(A,mode){
+  const B=A.map(r=>r.slice());const m=B.length,n=B[0].length;
+  const steps=[];let r=0,rank=0;
+  for(let c=0;c<n&&r<m;c++){
+    let p=-1;
+    for(let rr=r;rr<m;rr++)if(Math.abs(B[rr][c])>1e-12){p=rr;break;}
+    if(p===-1){
+      steps.push({op:'第 '+(c+1)+' 列无可做主元的行',mat:B.map(x=>x.slice()),why:'这一列从当前行往下全是 0，无法作为主元列，跳到下一列（这不影响秩）。',skip:true});
+      continue;
+    }
+    if(p!==r){
+      [B[r],B[p]]=[B[p],B[r]];
+      steps.push({op:'R'+(r+1)+' ↔ R'+(p+1),mat:B.map(x=>x.slice()),why:'把含非零主元的行换到当前位置。交换行不影响矩阵的秩。'});
+    }
+    const piv=B[r][c];
+    rank++;
+    if(mode==='rref'&&Math.abs(piv-1)>1e-9){
+      for(let cc=0;cc<n;cc++)B[r][cc]/=piv;
+      steps.push({op:'R'+(r+1)+' ← R'+(r+1)+'/'+fmt(piv),mat:B.map(x=>x.slice()),why:'行最简形要求主元位置为 1：把整个主元行除以主元（行倍乘，秩不变）。'});
+    }
+    // 消元：rref 上下都消；echelon 只消下方
+    const rows=mode==='rref'?[].concat(Array.from({length:r},(_,i)=>i),Array.from({length:m-r-1},(_,i)=>r+1+i)):Array.from({length:m-r-1},(_,i)=>r+1+i);
+    for(const rr of rows){
+      const v=B[rr][c];
+      if(Math.abs(v)<1e-12)continue;
+      const mult=v/(mode==='rref'?1:piv);
+      for(let cc=0;cc<n;cc++)B[rr][cc]-=mult*B[r][cc];
+      steps.push({op:'R'+(rr+1)+' ← R'+(rr+1)+' − '+fmt(mult)+'·R'+(r+1),mat:B.map(x=>x.slice()),
+        why:mode==='rref'?'把主元列中这一行位置消成 0（倍加行，秩不变）。':'把主元下方的元素消成 0，逐步形成阶梯形。'});
+    }
+    r++;
+  }
+  return {steps,rank,mat:B};
+}
+
+// ============ 答案判分（支持数字/根号/分数/矩阵） ============
+function normTok(t){
+  return t.toLowerCase().replace(/⁺/g,'+').replace(/√/g,'sqrt').replace(/^sqrt$/,'sqrt').replace(/\s+/g,'');
+}
+function evalTok(t){
+  t=normTok(t);
+  if(/^[a-zA-Z][a-zA-Z0-9]*$/.test(t))return {sym:t};
+  let e=t.replace(/\^/g,'**').replace(/sqrt\(/g,'Math.sqrt(');
+  try{return {v:Function('"use strict";return ('+e+')')()};}catch(err){return {raw:t};}
+}
+function splitToks(s){return s.split(/[,，;；]/).map(x=>x.trim()).filter(Boolean);}
+function checkAns(user,exp,isSet){
+  const u0=user.trim();
+  if(exp.indexOf('<')===0)return u0.replace(/\s/g,'')==='<1';
+  const u=splitToks(u0).map(evalTok), e=splitToks(exp).map(evalTok);
+  if(u.length!==e.length)return false;
+  const valsU=u.map(x=>x.v!==undefined?x.v:null), valsE=e.map(x=>x.v!==undefined?x.v:null);
+  if(isSet){
+    const a=valsU.filter(x=>x!==null).sort((p,q)=>p-q),b=valsE.filter(x=>x!==null).sort((p,q)=>p-q);
+    if(a.length!==b.length)return false;
+    return a.every((x,i)=>Math.abs(x-b[i])<1e-6);
+  }
+  return u.every((x,i)=>{
+    const y=e[i];
+    if(x.v!==undefined&&y.v!==undefined)return Math.abs(x.v-y.v)<1e-6;
+    if(x.sym&&y.sym)return x.sym===y.sym;
+    if(x.raw||y.raw)return normTok(x.raw||'')===normTok(y.raw||'');
+    return false;
+  });
+}
+QUIZ_FILL.forEach(q=>q.set=q.id==='fl5');
+// ============ 学习状态（localStorage 持久化） ============
+const LS='matrixStudyV1';
+function loadS(){try{const s=JSON.parse(localStorage.getItem(LS));return s||{concepts:{},tf:{},fill:{},wrong:[],start:Date.now()};}catch(e){return{concepts:{},tf:{},fill:{},wrong:[],start:Date.now()};}}
+let S=loadS();
+function save(){try{localStorage.setItem(LS,JSON.stringify(S));}catch(e){}}
+function cLearned(id){return S.concepts[id]&&S.concepts[id].l===1;}
+function cUnknown(id){return S.concepts[id]&&S.concepts[id].u===1;}
+function setLearned(id,v){S.concepts[id]=S.concepts[id]||{l:0,u:0};S.concepts[id].l=v?1:0;if(v)S.concepts[id].u=0;save();}
+function setUnknown(id,v){S.concepts[id]=S.concepts[id]||{l:0,u:0};S.concepts[id].u=v?1:0;if(v)S.concepts[id].l=0;save();}
+function addWrong(k,id){if(!S.wrong.some(w=>w.k===k&&w.id===id))S.wrong.push({k,id,ts:Date.now()});save();}
+function delWrong(k,id){S.wrong=S.wrong.filter(w=>!(w.k===k&&w.id===id));save();}
+function quizStats(){
+  let done=0,r=0,w=0;
+  Object.keys(S.tf).forEach(id=>{done++;r+=S.tf[id].r;w+=S.tf[id].w;});
+  Object.keys(S.fill).forEach(id=>{done++;r+=S.fill[id].r;w+=S.fill[id].w;});
+  return {done,r,w};
+}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2200);}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// ============ 视图：首页 ============
+function renderHome(){
+  const nCon=Object.keys(CONCEPTS).length;
+  const learned=Object.keys(CONCEPTS).filter(id=>cLearned(id)).length;
+  const unknown=Object.keys(CONCEPTS).filter(id=>cUnknown(id)).length;
+  const qs=quizStats();
+  const pct=Math.round(learned/nCon*100);
+  document.getElementById('st-learned1').textContent=learned;
+  document.getElementById('st-quiz').textContent=qs.done;
+  document.getElementById('st-wrong').textContent=S.wrong.length;
+  document.getElementById('st-concepts').textContent=learned;
+  document.getElementById('st-unknown').textContent=unknown;
+  document.getElementById('st-quiz2').textContent=qs.done;
+  document.getElementById('st-wrong2').textContent=S.wrong.length;
+  document.getElementById('st-pct').textContent=pct+'%';
+  document.getElementById('st-bar').style.width=pct+'%';
+  document.getElementById('path-1').className='path-card'+(learned>0?' done':'');
+  document.getElementById('path-4').className='path-card'+(S.wrong.length===0?' done':'');
+}
+function renderMap(){
+  const el=document.getElementById('view-map');
+  let h='<div class="container">';
+  h+='<h2 class="sec-title"><span class="no">MAP</span>知识框架总览<small>六章知识地图 · 点击知识点直达概念</small></h2>';
+  h+='<p class="hint">框架依据《矩阵论II》复习资料（Chapter I–VI 课件 + 2024 复习资料汇总）整理。每个知识点后面可以标“学会了 / 不会”。</p>';
+  for(const ch of CHAPTERS){
+    const learned=ch.concepts.filter(c=>cLearned(c)).length;
+    const unknown=ch.concepts.filter(c=>cUnknown(c)).length;
+    h+='<div class="map-chap"><h3><span class="pn">'+ch.num+'</span>'+ch.title+'<span class="st">'+ch.st+'</span></h3>';
+    h+='<div class="topics">';
+    for(const cid of ch.concepts){
+      const c=CONCEPTS[cid];
+      h+='<a class="topic'+(cLearned(cid)?' done':'')+(cUnknown(cid)?' unknown':'')+'" href="#/concept?ch='+ch.id+'&c='+cid+'"><span class="dot"></span>'+c.title+'</a>';
+    }
+    h+='</div>';
+    if(ch.ex.length){
+      h+='<div style="margin-top:10px;font-size:12.5px;color:var(--muted)">配套例题：';
+      for(const eid of ch.ex){h+='<a href="#/examples?e='+eid+'" style="margin-right:8px">'+EXAMPLES[eid].title+'</a>';}
+      h+='</div>';
+    }
+    h+='<div style="margin-top:8px;display:flex;gap:10px;font-size:12px"><span class="chip'+(learned===ch.concepts.length?' green':'')+'">已学 '+learned+'/'+ch.concepts.length+'</span>'+(unknown?'<span class="chip red">不会 '+unknown+'</span>':'')+'</div></div>';
+  }
+  h+='<div class="card" style="margin-top:18px"><h3>怎么用这张地图</h3><p class="sub" style="margin-top:4px">1. 先整章浏览，心里有框架；2. 点进概念卡片，看大白话解释，标记“学会了”；3. 标“不会”的知识点会自动进入“错题复习”。建议按 第1章 → 第2/3章 → 第4章 → 第6章 的顺序推进。</p></div>';
+  h+='</div>';
+  el.innerHTML=h;
+}
+function renderConcept(){
+  const el=document.getElementById('view-concept');
+  const params=new URLSearchParams(location.hash.split('?')[1]||'');
+  const chId=params.get('ch'), cSel=params.get('c');
+  let h='<div class="container">';
+  h+='<h2 class="sec-title"><span class="no">CONCEPT</span>基础概念<small>先看一句大白话，不懂再展开详细版</small></h2>';
+  h+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px"><a class="chip'+(chId?'':' on')+'" href="#/concept">全部</a>';
+  for(const ch of CHAPTERS){h+='<a class="chip'+(chId===ch.id?' on':'')+'" href="#/concept?ch='+ch.id+'">'+ch.num+' '+ch.title+'</a>';}
+  h+='</div>';
+  const list=[];
+  for(const ch of CHAPTERS){if(chId&&ch.id!==chId)continue;for(const cid of ch.concepts)list.push({ch,cid});}
+  if(cSel){
+    h+='<div class="hint" style="margin-bottom:10px"><a href="#/concept'+(chId?'?ch='+chId:'')+'">← 返回全部概念</a></div>';
+  }
+  for(const it of list){
+    const c=CONCEPTS[it.cid];
+    h+='<div class="concept" id="c-'+it.cid+'"><h3>'+it.ch.num+' · '+c.title+(c.tags.map(t=>'<span class="chip" style="margin-left:6px">'+t+'</span>').join(''))+'</h3>';
+    h+='<div class="one">'+wrapTerms(c.one)+'</div>';
+    h+='<div class="detail" id="d-'+it.cid+'">'+wrapTerms(c.detail)+'</div>';
+    h+='<div class="acts">';
+    h+='<button class="btn btn-sm btn-o" onclick="toggleDetail(\''+it.cid+'\')" id="b-'+it.cid+'">展开详细解释</button>';
+    h+='<button class="btn btn-sm '+(cLearned(it.cid)?'btn-g':'btn-o')+'" onclick="markLearned(\''+it.cid+'\')" id="l-'+it.cid+'">'+(cLearned(it.cid)?'已学会':'标记学会了')+'</button>';
+    h+='<button class="btn btn-sm '+(cUnknown(it.cid)?'btn-r':'btn-o')+'" onclick="markUnknown(\''+it.cid+'\')" id="u-'+it.cid+'">'+(cUnknown(it.cid)?'已标不会':'这个我不会')+'</button>';
+    if(c.ex){h+='<a class="btn btn-sm btn-p" href="#/examples?e='+c.ex+'">看例题演示</a>';}
+    h+='</div></div>';
+  }
+  h+='</div>';
+  el.innerHTML=h;
+  if(cSel){const d=document.getElementById('c-'+cSel);if(d){d.scrollIntoView({behavior:'smooth',block:'center'});}}
+}
+function toggleDetail(id){const d=document.getElementById('d-'+id),b=document.getElementById('b-'+id);const open=d.classList.toggle('open');b.textContent=open?'收起详细解释':'展开详细解释';}
+function markLearned(id){setLearned(id,!cLearned(id));const b=document.getElementById('l-'+id);if(cLearned(id)){b.textContent='已学会';b.className='btn btn-sm btn-g';setUnknown(id,false);const u=document.getElementById('u-'+id);if(u){u.textContent='这个我不会';u.className='btn btn-sm btn-o';}}else{b.textContent='标记学会了';b.className='btn btn-sm btn-o';}toast(cLearned(id)?'已标记学会，继续加油':'已取消“学会”标记');}
+function markUnknown(id){setUnknown(id,!cUnknown(id));const b=document.getElementById('u-'+id);if(cUnknown(id)){b.textContent='已标不会';b.className='btn btn-sm btn-r';setLearned(id,false);const l=document.getElementById('l-'+id);if(l){l.textContent='标记学会了';l.className='btn btn-sm btn-o';}}else{b.textContent='这个我不会';b.className='btn btn-sm btn-o';}toast(cUnknown(id)?'已加入“不会的知识点”，复习时会提醒你':'已取消“不会”标记');}
+
+// ============ 视图：例题 ============
+function stepBlock(s,no){
+  let h='<div class="step"><span class="no">'+no+'</span>';
+  h+='<h4>'+(s.t||'步骤 '+(no+1))+'</h4>';
+  if(s.op)h+='<span class="op">'+s.op+'</span>';
+  h+='<div class="show">'+wrapTerms(s.body)+'</div>';
+  if(s.why)h+='<div class="why"><b>为什么这样做：</b>'+wrapTerms(s.why)+'</div>';
+  h+='</div>';
+  return h;
+}
+function renderExamples(){
+  const el=document.getElementById('view-examples');
+  const params=new URLSearchParams(location.hash.split('?')[1]||'');
+  const eSel=params.get('e');
+  let h='<div class="container">';
+  h+='<h2 class="sec-title"><span class="no">EXAMPLE</span>例题分步演示<small>每一步都告诉你：做了什么、为什么这样做</small></h2>';
+  const ids=Object.keys(EXAMPLES);
+  h+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"><a class="chip'+(eSel?'':' on')+'" href="#/examples">全部</a>';
+  for(const ch of CHAPTERS){const has=ch.ex.some(e=>EXAMPLES[e]);if(has)h+='<a class="chip'+(ch.id===(eSel?EXAMPLES[eSel].ch:null)?' on':'')+'" href="#/examples?ch='+ch.id+'">'+ch.num+'</a>';}
+  h+='</div>';
+  for(const id of ids){
+    const ex=EXAMPLES[id];
+    if(eSel&&id!==eSel)continue;
+    h+='<div class="card" style="margin-bottom:16px" id="ex-'+id+'"><h3 style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'+ex.title+'<span class="chip '+(ex.type==='auto'?'':'red')+'" style="margin-left:auto">'+(ex.type==='auto'?'可切换解法·自动演示':'分步讲解')+'</span></h3>';
+    h+='<div class="meta">'+ex.ch+' · '+ex.kind+' · '+ex.source+'</div>';
+    h+='<p class="sub">'+wrapTerms(ex.desc)+'</p>';
+    if(ex.type==='auto'){
+      h+='<div style="margin-top:12px"><a class="btn btn-p" href="#/tools?tool='+ex.preset.tool+'&m='+encodeURIComponent(JSON.stringify(ex.preset.mat))+'">打开工具，亲手演示</a> <span class="hint" style="margin-left:8px">支持切换“按第一行展开 / 按其他行 / 化为上三角”等解法</span></div>';
+    }else{
+      h+='<div class="steps" id="steps-'+id+'" style="margin-top:12px"></div>';
+      h+='<div class="stepnav"><button class="btn btn-p btn-sm" onclick="stepNext(\''+id+'\')">显示下一步</button> <button class="btn btn-o btn-sm" onclick="stepAll(\''+id+'\')">一次看完</button> <button class="btn btn-o btn-sm" onclick="stepReset(\''+id+'\')">重置</button><span class="hint" id="stc-'+id+'">共 '+ex.steps.length+' 步</span></div>';
+    }
+    h+='</div>';
+  }
+  h+='<div class="card" style="margin-top:6px"><h3>看例题的小贴士</h3><p class="sub" style="margin-top:4px">每个“为什么这样做”都对应一个考点：选哪行展开（0 多的行省事）、为什么用范数判收敛（谱半径≤范数）、为什么先看几何重数（决定能不能对角化）。把“为什么”串起来，就是你的解题套路。</p></div>';
+  h+='</div>';
+  el.innerHTML=h;
+  // 预加载已展开状态
+  Object.keys(EXAMPLES).forEach(id=>{
+    const ex=EXAMPLES[id];
+    if(ex.type==='guide'){
+      const box=document.getElementById('steps-'+id);
+      if(!box)return;
+      const st=stepState[id]||0;
+      box.innerHTML='';
+      for(let i=0;i<st&&i<ex.steps.length;i++)box.innerHTML+=stepBlock(ex.steps[i],i+1);
+      document.getElementById('stc-'+id).textContent='已显示 '+st+' / '+ex.steps.length+' 步';
+    }
+  });
+}
+const stepState={};
+function stepNext(id){const ex=EXAMPLES[id];const cur=stepState[id]||0;if(cur>=ex.steps.length){toast('已经是最后一步了');return;}stepState[id]=cur+1;renderExamplesSteps(id);}
+function stepAll(id){stepState[id]=EXAMPLES[id].steps.length;renderExamplesSteps(id);toast('已展开全部步骤');}
+function stepReset(id){delete stepState[id];renderExamplesSteps(id);}
+function renderExamplesSteps(id){
+  const ex=EXAMPLES[id],box=document.getElementById('steps-'+id);
+  if(!box)return;
+  const st=stepState[id]||0;
+  box.innerHTML='';
+  for(let i=0;i<st&&i<ex.steps.length;i++)box.innerHTML+=stepBlock(ex.steps[i],i+1);
+  const c=document.getElementById('stc-'+id);if(c)c.textContent='已显示 '+st+' / '+ex.steps.length+' 步';
+}
+
+// ============ 工具台：矩阵输入部件 ============
+function miHTML(rows,cols,vals){
+  vals=vals||[];
+  let h='<div class="mi-wrap"><table class="mi-table">';
+  for(let i=0;i<rows;i++){h+='<tr>';
+    for(let j=0;j<cols;j++){const v=vals[i]?vals[i][j]:'';h+='<td><input data-mi="'+i+','+j+'" value="'+(v!==undefined&&v!==null?v:'')+'"></td>';}
+  h+='</tr>';}
+  return h+'</table></div>';
+}
+function readMat(root,rows,cols){
+  const A=[];let ok=true;
+  for(let i=0;i<rows;i++){const r=[];
+    for(let j=0;j<cols;j++){const inp=root.querySelector('[data-mi="'+i+','+j+'"]');const v=parseFloat(inp?inp.value:'');
+      if(isNaN(v)){ok=false;r.push(0);}else r.push(v);}
+    A.push(r);}
+  return {A,ok};
+}
+function setMat(root,vals){for(let i=0;i<vals.length;i++)for(let j=0;j<vals[i].length;j++){const inp=root.querySelector('[data-mi="'+i+','+j+'"]');if(inp)inp.value=vals[i][j];}}
+
+function renderTools(){
+  const el=document.getElementById('view-tools');
+  const params=new URLSearchParams(location.hash.split('?')[1]||'');
+  const tool=params.get('tool'),m=params.get('m');
+  let preset=null;try{preset=m?JSON.parse(decodeURIComponent(m)):null;}catch(e){}
+  let h='<div class="container">';
+  h+='<h2 class="sec-title"><span class="no">TOOL</span>互动工具台<small>亲手输入矩阵，看每一步为什么这样做</small></h2>';
+  h+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">';
+  h+='<a class="chip" href="#tools-det">① 行列式计算</a><a class="chip" href="#tools-gauss">② 行变换演示</a><a class="chip" href="#tools-cp">③ 特征多项式</a>';
+  h+='</div>';
+  h+='<div class="card" id="tools-det" style="margin-bottom:16px"><h3>① 行列式计算器<small style="font-weight:400;margin-left:8px;color:var(--muted)">支持切换展开方式，每步解释为什么</small></h3>';
+  h+='<div class="tool-head">阶数：<select id="dt-n" onchange="dtResize()"><option>2</option><option selected>3</option><option>4</option></select></div>';
+  h+='<div class="strategy" id="dt-strat">';
+  h+='<button class="btn btn-sm btn-o on" data-st="row0" onclick="dtStrategy(\'row0\')">按第一行展开</button>';
+  h+='<button class="btn btn-sm btn-o" data-st="row1" onclick="dtStrategy(\'row1\')">按第二行展开</button>';
+  h+='<button class="btn btn-sm btn-o" data-st="row2" onclick="dtStrategy(\'row2\')">按第三行展开</button>';
+  h+='<button class="btn btn-sm btn-o" data-st="col0" onclick="dtStrategy(\'col0\')">按第一列展开</button>';
+  h+='<button class="btn btn-sm btn-o" data-st="tri" onclick="dtStrategy(\'tri\')">化为上三角</button>';
+  h+='</div>';
+  h+='<div id="dt-grid"></div>';
+  h+='<div class="stepnav" style="margin-top:12px"><button class="btn btn-p" onclick="dtRun()">开始计算</button> <button class="btn btn-o" onclick="dtReset()">重置</button></div>';
+  h+='<div id="dt-out"></div></div>';
+  h+='<div class="card" id="tools-gauss" style="margin-bottom:16px"><h3>② 行变换演示<small style="font-weight:400;margin-left:8px;color:var(--muted)">高斯消元：选主元 → 交换 → 消元，一步步看</small></h3>';
+  h+='<div class="tool-head">行数：<select id="g-r" onchange="gResize()"><option selected>3</option><option>2</option><option>4</option><option>5</option></select>　列数：<select id="g-c" onchange="gResize()"><option>3</option><option>2</option><option selected>4</option><option>5</option></select>　目标：<select id="g-mode"><option value="echelon">行阶梯形</option><option value="rref">行最简形</option></select></div>';
+  h+='<div id="g-grid"></div>';
+  h+='<div class="stepnav" style="margin-top:12px"><button class="btn btn-p" onclick="gRun()">开始消元</button> <button class="btn btn-o" onclick="gPrev()">← 上一步</button> <button class="btn btn-o" onclick="gNext()">下一步 →</button> <button class="btn btn-o" onclick="gReset()">重置</button> <span class="hint" id="g-st">尚未开始</span></div>';
+  h+='<div id="g-out"></div></div>';
+  h+='<div class="card" id="tools-cp"><h3>③ 特征多项式练习<small style="font-weight:400;margin-left:8px;color:var(--muted)">算 det(λI−A)，最后验证 f(A)=O</small></h3>';
+  h+='<div class="tool-head">阶数：<select id="cp-n" onchange="cpResize()"><option selected>2</option><option>3</option></select></div>';
+  h+='<div id="cp-grid"></div>';
+  h+='<div class="stepnav" style="margin-top:12px"><button class="btn btn-p" onclick="cpRun()">开始计算</button> <button class="btn btn-o" onclick="cpReset()">重置</button></div>';
+  h+='<div id="cp-out"></div></div>';
+  h+='</div>';
+  el.innerHTML=h;
+  dtResize();gResize();cpResize();
+  if(preset&&tool){
+    if(tool==='det'){const n=preset.length;document.getElementById('dt-n').value=n;dtResize();setMat(document.getElementById('dt-grid'),preset);dtRun();}
+    if(tool==='gauss'){document.getElementById('g-r').value=preset.length;document.getElementById('g-c').value=preset[0].length;gResize();setMat(document.getElementById('g-grid'),preset);}
+    if(tool==='charpoly'){document.getElementById('cp-n').value=preset.length;cpResize();setMat(document.getElementById('cp-grid'),preset);cpRun();}
+    const t=document.getElementById('tools-'+(tool==='det'?'det':tool==='gauss'?'gauss':'cp'));
+    if(t)t.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+}
+
+// ---- 行列式工具逻辑 ----
+let dtStrat='row0';
+function dtStrategy(s){
+  dtStrat=s;
+  document.querySelectorAll('#dt-strat .btn').forEach(b=>b.classList.remove('on'));
+  const b=document.querySelector('#dt-strat [data-st="'+s+'"]');if(b)b.classList.add('on');
+}
+function dtResize(){const n=parseInt(document.getElementById('dt-n').value);const g=document.getElementById('dt-grid');g.innerHTML=miHTML(n,n,[]);
+  const r2=document.querySelector('#dt-strat [data-st="row2"]');if(r2)r2.style.display=n>=3?'':'none';
+  const c0=document.querySelector('#dt-strat [data-st="col0"]');if(c0)c0.style.display=n>=2?'':'none';}
+function dtReset(){document.getElementById('dt-out').innerHTML='';const n=parseInt(document.getElementById('dt-n').value);document.getElementById('dt-grid').innerHTML=miHTML(n,n,[]);}
+function dtRun(){
+  const n=parseInt(document.getElementById('dt-n').value);
+  const {A,ok}=readMat(document.getElementById('dt-grid'),n,n);
+  const out=document.getElementById('dt-out');
+  if(!ok){out.innerHTML='<div class="feedback no">还有格子是空的或不是数字，请把每个位置都填成数字。</div>';return;}
+  if(dtStrat==='tri'){
+    const res=triDetSteps(A);
+    let h='<div class="result-box"><div class="steps" style="margin-top:0">';
+    if(res.steps.length===0){h+='<div class="step"><span class="no">1</span><h4>一步完成</h4><div class="show">1 阶矩阵：行列式 = 唯一元素。</div></div>';}
+    res.steps.forEach((s,i)=>{h+=stepBlock(s,i+1);});
+    h+='</div><div style="margin-top:12px">行列式 det A = <span class="big">'+fmt(res.det)+'</span></div>';
+    if(res.sign!==1)h+='<div class="hint">过程中交换过行，行列式变号已在结果中扣除。</div>';
+    h+='</div>';
+    out.innerHTML=h;
+  }else{
+    const isRow=dtStrat.indexOf('row')===0;
+    const sel=dtStrat==='col0'?0:parseInt(dtStrat.slice(3));
+    const res=expandDetSteps(A,isRow?sel:0,isRow?0:sel,isRow?'row':'col');
+    let h='<div class="result-box"><div class="steps" style="margin-top:0">';
+    const selTxt=isRow?'第 '+(sel+1)+' 行':'第 '+(sel+1)+' 列';
+    const zeroCount=isRow?A[sel].filter(x=>Math.abs(x)<1e-12).length:0;
+    h+=stepBlock({t:'选择展开位置：'+selTxt,body:'展开公式：det A = Σ (−1)<sup>i+j</sup> a<sub>ij</sub> M<sub>ij</sub>'+(zeroCount?'<br>这一'+(isRow?'行':'列')+'里有 '+zeroCount+' 个 0，可以少算好几项。':''),why:isRow?'为什么选这一行：每一项都要乘 a<sub>ij</sub>，元素是 0 的那一项整个为 0。“0 多的行（列）”展开最省事；都一样时习惯选第一行。':'为什么选这一列：同理，元素简单或 0 多的列优先。'},1);
+    let acc=0;
+    res.terms.forEach((t,idx)=>{
+      acc+=t.termVal;
+      let body='划去第 '+(t.i+1)+' 行、第 '+(t.j+1)+' 列，子式 M<sub>'+(t.i+1)+(t.j+1)+'</sub> = '+M(t.minorMat)+'<br>';
+      if(t.sub&&t.sub.formula)body+='2 阶子式 = a₁₁a₂₂−a₁₂a₂₁ = '+fmt(t.minorVal)+'。<br>';
+      else body+='子式 = <b>'+fmt(t.minorVal)+'</b>。';
+      body+='该项 = (−1)<sup>'+(t.i+t.j)+'</sup> × ('+fmt(t.coef)+') × ('+fmt(t.minorVal)+') = <b>'+fmt(t.termVal)+'</b>'+(res.terms.length>1?'；累计和 = '+fmt(acc):'');
+      const why='每一项 = 符号 × 元素 × 子式。符号 (−1)<sup>i+j</sup> 由位置决定：行+列是偶数取正、奇数取负（棋盘式正负号）。';
+      let subH='';
+      if(t.sub&&t.sub.terms){
+        subH='<details style="margin-top:8px"><summary class="hint" style="cursor:pointer">展开这个 3 阶子式（'+(t.sub.terms.length)+' 项）</summary><div style="margin-top:6px">';
+        t.sub.terms.forEach(tt=>{subH+='<div style="padding:4px 0;font-size:13.5px">(−1)<sup>'+(tt.i+tt.j)+'</sup>×'+fmt(tt.coef)+'×'+fmt(tt.minorVal)+' = '+fmt(tt.termVal)+'</div>';});
+        subH+='<div style="padding-top:4px;color:var(--blue)">子式合计 = '+fmt(t.sub.val)+'</div></div></details>';
+      }
+      h+=stepBlock({t:'展开项 '+(idx+1)+'：(−1)<sup>'+(t.i+t.j)+'</sup>·a<sub>'+(t.i+1)+(t.j+1)+'</sub>·M<sub>'+(t.i+1)+(t.j+1)+'</sub>',body:body+subH,why:why},idx+2);
+    });
+    h+='</div><div style="margin-top:12px">det A = <span class="big">'+fmt(res.det)+'</span></div>';
+    h+='<div class="hint">换一种策略（按第二行 / 按第一列 / 化为上三角）结果应完全一样——这是最好的自我校验。</div></div>';
+    out.innerHTML=h;
+  }
+}
+
+// ---- 行变换工具逻辑 ----
+let gSteps=[],gIdx=0;
+function gResize(){const r=parseInt(document.getElementById('g-r').value),c=parseInt(document.getElementById('g-c').value);document.getElementById('g-grid').innerHTML=miHTML(r,c,[]);}
+function gReset(){gSteps=[];gIdx=0;document.getElementById('g-out').innerHTML='';document.getElementById('g-st').textContent='尚未开始';gResize();}
+function gRun(){
+  const r=parseInt(document.getElementById('g-r').value),c=parseInt(document.getElementById('g-c').value);
+  const {A,ok}=readMat(document.getElementById('g-grid'),r,c);
+  const out=document.getElementById('g-out');
+  if(!ok){out.innerHTML='<div class="feedback no">还有格子是空的或不是数字，请填完整。</div>';return;}
+  const mode=document.getElementById('g-mode').value;
+  gSteps=gaussSteps(A,mode).steps;
+  gIdx=0;
+  document.getElementById('g-st').textContent='共 '+gSteps.length+' 步';
+  renderGauss();
+}
+function renderGauss(){
+  const out=document.getElementById('g-out');
+  if(gSteps.length===0){out.innerHTML='';return;}
+  const s=gSteps[gIdx];
+  let h='<div class="result-box"><div class="hint">第 '+(gIdx+1)+' / '+gSteps.length+' 步</div>';
+  h+=stepBlock({t:s.op,body:'当前矩阵：<br>'+M(s.mat),why:s.why},gIdx+1);
+  if(gIdx===gSteps.length-1){
+    const rk=gSteps.filter(x=>!x.skip).length;
+    h+='<div style="margin-top:12px"><b>完成。</b>主元个数（=矩阵的秩）= <span class="big">'+rk+'</span></div>';
+  }
+  h+='</div>';
+  out.innerHTML=h;
+}
+function gNext(){if(gIdx<gSteps.length-1){gIdx++;renderGauss();}else toast('已经是最后一步');}
+function gPrev(){if(gIdx>0){gIdx--;renderGauss();}else toast('已经是第一步');}
+
+// ---- 特征多项式工具逻辑 ----
+function cpResize(){const n=parseInt(document.getElementById('cp-n').value);document.getElementById('cp-grid').innerHTML=miHTML(n,n,[]);}
+function cpReset(){document.getElementById('cp-out').innerHTML='';cpResize();}
+function symCellHtml(v,isDiag){const z=Math.abs(v)<1e-12;if(isDiag)return z?'λ':(v<0?'λ+'+(-v):'λ−'+v);return z?'0':(v<0?'+'+(-v):'−'+v);}
+function symMatHtml(A){
+  let h='<span class="mat blue">';
+  for(let i=0;i<A.length;i++){h+='<span class="r" style="grid-template-columns:repeat('+A.length+',auto)">';
+    for(let j=0;j<A.length;j++)h+='<span class="cell">'+symCellHtml(A[i][j],i===j)+'</span>';
+    h+='</span>';}
+  return h+'</span>';
+}
+function cpRun(){
+  const n=parseInt(document.getElementById('cp-n').value);
+  const {A,ok}=readMat(document.getElementById('cp-grid'),n,n);
+  const out=document.getElementById('cp-out');
+  if(!ok){out.innerHTML='<div class="feedback no">还有格子是空的或不是数字，请填完整。</div>';return;}
+  const r=charpolySteps(A);
+  let h='<div class="result-box"><div class="steps" style="margin-top:0">';
+  h+=stepBlock({t:'第 1 步：写出 λI−A',body:'对角位置放 λ−a<sub>ii</sub>，非对角位置放 −a<sub>ij</sub>：<br>'+symMatHtml(A),why:'特征多项式定义为 f(λ)=det(λI−A)。先把 λI−A 拼出来，再求行列式。'},1);
+  const parts=[];
+  r.subSteps.forEach((s,idx)=>{
+    const signTxt=s.sign>0?'+':'−';
+    parts.push((signTxt==='−'?'−':'')+'('+s.cellTxt+')·['+s.termPolyStr+']');
+    let body='展开项 '+(idx+1)+'：<b>'+signTxt+'</b> ('+s.cellTxt+') × 子式 = <b>'+polyStr(s.poly)+'</b>';
+    if(s.minorDesc&&(s.minorDesc.indexOf('λ')>=0))body+='<br><span class="hint">子式 = '+s.minorDesc+'（2 阶子式按 (λ−a)(λ−d)−bc 展开）</span>';
+    h+=stepBlock({t:'第 2 步（项 '+(idx+1)+'）：(−1)<sup>j</sup>·(λ−a<sub>1j</sub>)·M<sub>1j</sub>',body:body,why:'按第一行展开：每个子式先算成 λ 的多项式，再乘本行元素。'},idx+2);
+  });
+  h+=stepBlock({t:'第 3 步：合并同类项',body:'f(λ) = '+parts.join(' ')+'<br><div class="formula math" style="font-size:17px">f(λ) = '+polyStr(r.f)+'</div>',why:'把各展开项按 λ 的幂合并。验算：常数项应等于 det(−A)=(−1)ⁿdetA，最高次项系数是 1。'},r.subSteps.length+2);
+  const fA=polyEvalMatrix(r.f,A);
+  const zero=fA.every(row=>row.every(x=>Math.abs(x)<1e-9));
+  h+=stepBlock({t:'第 4 步：验证 Cayley–Hamilton（f(A)=O）',body:'把 A 代入 f(λ) 得 f(A) = '+M(fA.map(r=>r.map(fmt)))+'<br>'+(zero?'<b style="color:var(--green)">所有元素都是 0：f(A)=O 成立 ✓</b>':'<b style="color:var(--red)">有不接近 0 的元素，请检查输入。</b>'),why:'Cayley–Hamilton 定理：任何矩阵都满足自己的特征多项式。它是“特征多项式算对没有”的最强自检。'},r.subSteps.length+3);
+  h+='</div></div>';
+  out.innerHTML=h;
+}
+
+// ============ 视图：练习 ============
+function renderPractice(){
+  const el=document.getElementById('view-practice');
+  let h='<div class="container">';
+  h+='<h2 class="sec-title"><span class="no">QUIZ</span>交互练习<small>判断题、填空题即时判分；错题自动进“错题复习”</small></h2>';
+  const qs=quizStats();
+  h+='<div class="card" style="margin-bottom:16px"><div class="grid g3"><div class="stat"><div class="n">'+qs.done+'</div><div class="l">已做题目数</div></div><div class="stat"><div class="n">'+qs.r+'</div><div class="l">答对次数</div></div><div class="stat"><div class="n">'+qs.w+'</div><div class="l">答错次数</div></div></div></div>';
+  h+='<h3 class="sec-title" style="margin-top:6px"><span class="no">TF</span>判断题<small>点击“对 / 错”，立刻看为什么</small></h3>';
+  for(const q of QUIZ_TF){
+    const rec=S.tf[q.id]||{r:0,w:0};
+    h+='<div class="quiz-item"><div class="q"><span class="chip">'+q.ch+'</span>'+q.q+'</div>';
+    h+='<div class="opt-row"><button class="opt-btn" onclick="ansTF(\''+q.id+'\',true)">对</button><button class="opt-btn" onclick="ansTF(\''+q.id+'\',false)">错</button></div>';
+    h+='<div class="feedback" id="fb-'+q.id+'"></div><div class="q-explain" id="qe-'+q.id+'"><span class="verdict" id="vd-'+q.id+'"></span><span id="qw-'+q.id+'"></span></div>';
+    if(rec.r+rec.w>0)h+='<div class="hint">已做：错 '+rec.w+' 次 / 对 '+rec.r+' 次</div>';
+    h+='</div>';
+  }
+  h+='<h3 class="sec-title" style="margin-top:22px"><span class="no">FILL</span>填空题<small>数字/根号/分数都行，填完点“检查”</small></h3>';
+  for(const q of QUIZ_FILL){
+    const rec=S.fill[q.id]||{r:0,w:0};
+    h+='<div class="quiz-item"><div class="q"><span class="chip">'+q.ch+'</span>'+q.q+'</div>';
+    h+='<div style="margin-top:10px"><input class="answer-input" id="in-'+q.id+'" placeholder="输入答案，如 √3,1 或 n,√n,1"><div class="stepnav" style="margin-top:8px"><button class="btn btn-sm btn-p" onclick="ansFill(\''+q.id+'\')">检查</button><button class="btn btn-sm btn-o" onclick="fillHint(\''+q.id+'\')">提示</button></div></div>';
+    h+='<div class="feedback" id="fb-'+q.id+'"></div><div class="q-explain" id="qe-'+q.id+'"><span class="verdict" id="vd-'+q.id+'"></span><span id="qw-'+q.id+'"></span></div>';
+    if(rec.r+rec.w>0)h+='<div class="hint">已做：错 '+rec.w+' 次 / 对 '+rec.r+' 次</div>';
+    h+='</div>';
+  }
+  h+='<div class="card"><h3>计算题 / 证明题去哪练？</h3><p class="sub">解答题在“例题分步演示”里逐条展开（QR 分解、e^{tA}、满秩分解求伪逆、盖尔圆等）。做完记得回来标记概念“学会了”。</p><a class="btn btn-p" href="#/examples">去例题演示</a></div>';
+  h+='</div>';
+  el.innerHTML=h;
+}
+function showFB(id,ok,msg,why){
+  const fb=document.getElementById('fb-'+id),qe=document.getElementById('qe-'+id),vd=document.getElementById('vd-'+id),qw=document.getElementById('qw-'+id);
+  if(!fb)return;
+  fb.className='feedback '+(ok?'ok':'no');fb.innerHTML=msg;
+  if(qe)qe.classList.add('open');
+  if(vd){vd.className='verdict '+(ok?'ok':'no');vd.textContent=ok?'回答正确！':'回答错误。';}
+  if(qw)qw.innerHTML=why;
+}
+function ansTF(id,val){
+  const q=QUIZ_TF.find(x=>x.id===id);
+  const ok=q.ans===val;
+  S.tf[id]=S.tf[id]||{r:0,w:0};
+  if(ok){S.tf[id].r++;delWrong('tf',id);}else{S.tf[id].w++;addWrong('tf',id);}
+  save();
+  showFB(id,ok,ok?'✔ 判断正确':'✘ 判断错误',q.why);
+  renderPractice();
+}
+function ansFill(id){
+  const q=QUIZ_FILL.find(x=>x.id===id);
+  const inp=document.getElementById('in-'+id);
+  if(!inp)return;
+  const u=inp.value.trim();
+  if(!u){showFB(id,false,'请先输入你的答案。',q.why);return;}
+  const ok=checkAns(u,q.ans,q.set);
+  S.fill[id]=S.fill[id]||{r:0,w:0};
+  if(ok){S.fill[id].r++;delWrong('fill',id);}else{S.fill[id].w++;addWrong('fill',id);}
+  save();
+  showFB(id,ok,ok?'✔ 答案正确':'✘ 不对哦，看看解析',q.why);
+  renderPractice();
+}
+function fillHint(id){const q=QUIZ_FILL.find(x=>x.id===id);showFB(id,false,'提示：'+q.why,'答案：'+q.ans);}
+
+// ============ 视图：错题复习 ============
+function renderReview(){
+  const el=document.getElementById('view-review');
+  const unknown=Object.keys(CONCEPTS).filter(id=>cUnknown(id));
+  let h='<div class="container">';
+  h+='<h2 class="sec-title"><span class="no">REVIEW</span>错题复习<small>错题与“不会”的知识点自动汇集在这里</small></h2>';
+  h+='<div class="card" style="margin-bottom:16px"><div class="grid g3"><div class="stat"><div class="n">'+S.wrong.length+'</div><div class="l">待复习错题</div></div><div class="stat"><div class="n">'+unknown.length+'</div><div class="l">不会的知识点</div></div><div class="stat"><div class="n">'+Object.keys(CONCEPTS).filter(id=>cLearned(id)).length+'</div><div class="l">已学会概念</div></div></div>';
+  h+='<div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-sm btn-o" onclick="clearWrong()">清空错题本</button><a class="btn btn-sm btn-p" href="#/practice">再做一遍练习</a></div></div>';
+  h+='<h3 class="sec-title" style="margin-top:4px"><span class="no">01</span>不会的知识点</h3>';
+  if(unknown.length===0){h+='<div class="empty">当前没有标“不会”的知识点。<a href="#/concept">去概念页</a>，遇到不懂的随手标一下。</div>';}
+  else{
+    h+='<div style="display:flex;flex-wrap:wrap;gap:8px">';
+    for(const id of unknown){const c=CONCEPTS[id];h+='<div class="chip red" style="padding:8px 12px">'+c.title+' <a href="#/concept?ch='+c.ch+'&c='+id+'" style="color:var(--blue);margin-left:4px">去复习</a></div>';}
+    h+='</div>';
+  }
+  h+='<h3 class="sec-title" style="margin-top:26px"><span class="no">02</span>错题本<small>重新答对会自动移出</small></h3>';
+  if(S.wrong.length===0){h+='<div class="empty">暂无错题。做错的判断题和填空题会自动出现在这里。</div>';}
+  else{
+    for(const w of S.wrong){
+      if(w.k==='tf'){const q=QUIZ_TF.find(x=>x.id===w.id);if(!q)continue;
+        h+='<div class="wrong-item"><div class="wq"><span class="chip red">判断</span>'+q.q+'</div>';
+        h+='<div class="ans">正确答案是：<b>'+(q.ans?'对':'错')+'</b>。请重新判断——</div>';
+        h+='<div class="review-act"><button class="btn btn-sm btn-g" onclick="reAnsTF(\''+w.id+'\',true)">对</button><button class="btn btn-sm btn-r" onclick="reAnsTF(\''+w.id+'\',false)">错</button><button class="btn btn-sm btn-o" onclick="showWhy(\''+w.id+'\')">看解析</button></div>';
+        h+='<div class="q-explain" id="rw-'+w.id+'">'+q.why+'</div></div>';
+      }else{const q=QUIZ_FILL.find(x=>x.id===w.id);if(!q)continue;
+        h+='<div class="wrong-item"><div class="wq"><span class="chip red">填空</span>'+q.q+'</div>';
+        h+='<div class="ans">正确答案：<b>'+q.ans+'</b></div>';
+        h+='<div class="review-act"><input class="answer-input" id="rin-'+w.id+'" placeholder="再填一次" style="max-width:280px"><button class="btn btn-sm btn-g" onclick="reAnsFill(\''+w.id+'\')">检查</button><button class="btn btn-sm btn-o" onclick="showWhy(\''+w.id+'\')">看解析</button></div>';
+        h+='<div class="q-explain" id="rw-'+w.id+'">'+q.why+'</div></div>';
+      }
+    }
+  }
+  h+='<div class="card" style="margin-top:18px"><h3>复习小贴士</h3><p class="sub" style="margin-top:4px">错题本记录“还没答对过”的题；重新答对一次自动移出。标“不会”的知识点，在概念页点“标记学会了”即可移出。建议每天花 10 分钟过一遍。</p></div>';
+  h+='</div>';
+  el.innerHTML=h;
+}
+function showWhy(id){const el=document.getElementById('rw-'+id);if(el)el.classList.toggle('open');}
+function reAnsTF(id,val){
+  const q=QUIZ_TF.find(x=>x.id===id);
+  if(q.ans===val){delWrong('tf',id);S.tf[id]=S.tf[id]||{r:0,w:0};S.tf[id].r++;save();toast('回答正确，已从错题本移出！');}
+  else{S.tf[id]=S.tf[id]||{r:0,w:0};S.tf[id].w++;save();toast('还是不对，先看解析再重试');}
+  renderReview();
+}
+function reAnsFill(id){
+  const q=QUIZ_FILL.find(x=>x.id===id);
+  const inp=document.getElementById('rin-'+id);
+  if(!inp||!inp.value.trim()){toast('请先输入答案');return;}
+  if(checkAns(inp.value.trim(),q.ans,q.set)){delWrong('fill',id);S.fill[id]=S.fill[id]||{r:0,w:0};S.fill[id].r++;save();toast('回答正确，已从错题本移出！');}
+  else{S.fill[id]=S.fill[id]||{r:0,w:0};S.fill[id].w++;save();toast('还是不对，先看解析再重试');}
+  renderReview();
+}
+function clearWrong(){S.wrong=[];save();renderReview();toast('错题本已清空');}
+
+// ============ 名词释义库：术语高亮与释义浮层 ============
+let TERM_PAT=null;
+(function buildTerms(){
+  const items=[];
+  for(const k in GLOSSARY){items.push(GLOSSARY[k].t);}
+  items.sort((a,b)=>b.length-a.length);            // 长词优先，避免“矩阵”吃掉“投影矩阵”
+  TERM_PAT=new RegExp('('+items.map(t=>t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')','g');
+})();
+function wrapTerms(html){
+  if(!html)return html;
+  if(html.indexOf('<')<0){return html.replace(TERM_PAT,'<span class="term" data-term="$1" title="点击查看释义">$1</span>');}
+  const parts=html.split(/(<[^>]+>)/g);             // 拆开 HTML 标签，只处理纯文本片，避免破坏标签
+  return parts.map(p=>{
+    if(p[0]==='<'&&p[p.length-1]==='>'){return p;}
+    return p.replace(TERM_PAT,'<span class="term" data-term="$1" title="点击查看释义">$1</span>');
+  }).join('');
+}
+function closeTermPop(){const p=document.querySelector('.term-pop');if(p)p.remove();}
+function showTermPop(term,ev){
+  const g=GLOSSARY[term];if(!g)return;
+  closeTermPop();
+  const d=document.createElement('div');d.className='term-pop';
+  d.innerHTML='<b>'+g.t+'</b><span class="chip" style="margin-left:6px">'+g.ch+'</span>'+
+    '<p>'+g.def+'</p>'+(g.f?'<div class="formula">'+g.f+'</div>':'')+
+    (g.link?'<p class="sub">↳ 概念页详解：<a href="#/concept?c='+g.link+'">'+(CONCEPTS[g.link]?CONCEPTS[g.link].title:'查看详情')+'</a></p>':'');
+  document.body.appendChild(d);
+  const r=ev.target.getBoundingClientRect();
+  d.style.left=Math.max(8,Math.min(r.left,window.innerWidth-d.offsetWidth-12))+'px';
+  let y=r.bottom+8;
+  if(y+d.offsetHeight>window.innerHeight-8){y=Math.max(8,r.top-d.offsetHeight-8);}
+  d.style.top=y+'px';
+}
+function renderGlossary(){
+  const el=document.getElementById('view-glossary');
+  const params=new URLSearchParams(location.hash.split('?')[1]||'');
+  const chSel=params.get('ch');
+  const total=Object.keys(GLOSSARY).length;
+  let h='<div class="container">';
+  h+='<h2 class="sec-title"><span class="no">GLOSSARY</span>名词释义库<small>遇到不懂的名词，点一下就出释义；也可以在这里搜索</small></h2>';
+  h+='<p class="sub" style="margin-top:2px">概念页与例题步骤里带<span class="term">橘色虚线下划线</span>的名词都可以直接点击；本库共 '+total+' 个术语，按章归类。</p>';
+  h+='<input class="g-search" id="g-search" placeholder="搜索名词，如：特征值、范数、广义逆、Jordan…">';
+  h+='<div class="g-chips"><a class="chip'+(chSel?'':' on')+'" href="#/glossary">全部</a><a class="chip'+(chSel==='基础'?' on':'')+'" href="#/glossary?ch=基础">基础</a>';
+  for(const c of CHAPTERS){h+='<a class="chip'+(chSel===c.num?' on':'')+'" href="#/glossary?ch='+c.num+'">'+c.num+'</a>';}
+  h+='</div><div class="g-grid" id="g-grid">';
+  for(const k in GLOSSARY){
+    const g=GLOSSARY[k];
+    if(chSel&&g.ch!==chSel)continue;
+    h+='<div class="g-card" data-q="'+(g.t+g.def+(g.f||'')).toLowerCase()+'"><h4>'+g.t+'<span class="chip">'+g.ch+'</span></h4><p>'+g.def+'</p>'+
+      (g.f?'<div class="formula">'+g.f+'</div>':'')+
+      (g.link?'<p class="link">↳ <a href="#/concept?c='+g.link+'">'+(CONCEPTS[g.link]?CONCEPTS[g.link].title:'查看详情')+'</a></p>':'')+'</div>';
+  }
+  h+='</div><div class="g-empty" id="g-empty" style="display:none">没有找到匹配的名词，换个关键词试试</div></div>';
+  el.innerHTML=h;
+  const inp=document.getElementById('g-search');
+  if(inp){inp.addEventListener('input',function(){
+    const v=this.value.trim().toLowerCase();let n=0;
+    document.querySelectorAll('.g-card').forEach(c=>{
+      const ok=!v||(c.getAttribute('data-q')||'').indexOf(v)>=0;
+      c.style.display=ok?'':'none';if(ok)n++;
+    });
+    document.getElementById('g-empty').style.display=n?'none':'block';
+  });}
+}
+
+// ============ 路由 ============
+const VIEWS={home:renderHome,map:renderMap,concept:renderConcept,glossary:renderGlossary,examples:renderExamples,tools:renderTools,practice:renderPractice,review:renderReview};
+function route(){
+  const h=location.hash||'#/home';
+  const path=h.replace('#/','').split('?')[0]||'home';
+  window.scrollTo(0,0);
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  const v=document.getElementById('view-'+path);
+  if(v){v.classList.add('on');}
+  else{document.getElementById('view-home').classList.add('on');}
+  document.querySelectorAll('#topnav a').forEach(a=>a.classList.toggle('on',a.getAttribute('data-nav')===path));
+  if(VIEWS[path])VIEWS[path]();
+  else renderHome();
+}
+window.addEventListener('hashchange',route);
+
+// 术语点击：显示释义浮层；点空白处关闭
+document.addEventListener('click',function(e){
+  const t=e.target.closest('.term');
+  if(t){e.preventDefault();e.stopPropagation();showTermPop(t.getAttribute('data-term'),e);return;}
+  closeTermPop();
+});
+
+// ============ 初始化 ============
+(function init(){
+  const btn=document.getElementById('btn-reset');
+  if(btn)btn.addEventListener('click',function(){
+    if(confirm('确定清空本机保存的学习进度、错题和“不会”标记吗？此操作不可恢复。')){
+      localStorage.removeItem(LS);
+      S={concepts:{},tf:{},fill:{},wrong:[],start:Date.now()};
+      location.reload();
+    }
+  });
+  route();
+})();
+</script>
+</body>
+</html>
