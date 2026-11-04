@@ -1,34 +1,51 @@
+---
+---
+
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
   {% include head.html %}
   <body>
-    {% include nav.html %}
 
-    {% if page.toc==true %}
-      <aside class="toc">
-        {% include toc.html html=content %}
-      </aside>
-    {% endif %}
-
-    <div id="main" role="main" class="wrapper-content">
-      <div class="container">
-        {{ content }}
+    <header class="site-header">
+      <div class="inner">
+        <a class="brand" href="/">
+          <span class="logo">慢</span>
+          <span>
+            <span class="name">{{ site.name }}</span>
+            <span class="desc">{{ site.description }}</span>
+          </span>
+        </a>
+        <nav class="nav">
+          <a href="/matrix-theory-learning-site/" class="matrix">矩阵论学习站</a>
+          {% for nav in site.navigation %}
+          <a href="{{ nav.url }}">{{ nav.name }}</a>
+          {% endfor %}
+        </nav>
       </div>
-    </div>
+    </header>
+
+    <main id="main" class="wrap">
+      {{ content }}
+    </main>
+
+    <footer class="site-footer">
+      <div class="inner">
+        <div class="links">
+          <a href="/about">关于</a>
+          <a href="/archive">归档</a>
+          <a href="/tags">标签</a>
+          <a href="https://github.com/panghao02">GitHub</a>
+        </div>
+        <p class="copy">{{ site.footer-text | default: "Copyright © 慢巡的博客" }}</p>
+        <div class="stat">
+          <span id="busuanzi_container_site_pv">浏览 <span id="busuanzi_value_site_pv"></span></span>
+          <span style="margin:0 10px">·</span>
+          <span id="busuanzi_container_site_uv">访客 <span id="busuanzi_value_site_uv"></span></span>
+        </div>
+      </div>
+    </footer>
 
     {% include analytics.html %}
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
   </body>
-
-  {% if page.toc==true %}
-  <script>
-    document.getElementById("main").classList.add("withtoc");
-  </script>
-  {% endif %}
-
-  <div class="wrapper-footer-mobile">
-    <footer class="footer">
-      {% include footer.html %}
-    </footer>
-  </div>
-
 </html>
