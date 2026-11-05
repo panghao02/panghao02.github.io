@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "使用 Apache Spark 清除缓存"
-date: 2024-06-05 00:00:00 +0800
+date: 2024-06-05
 categories: [实训]
 tags: [Spark, Hive]
 ---
