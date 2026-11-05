@@ -1,14 +1,102 @@
 ---
 layout: page
-title: Photo-Wall
+title: 图集
 permalink: /photos/
 ---
 
-<div>
-    <div><p>R</p></div>
+<p class="gallery-note">收集在路上的那些可爱瞬间 —— 冬日白兔、星空少女，还有一只戴安全帽的章鱼猫。</p>
 
-    <div>
-      <h2>markdown开源编辑工具</h2>
-      <a href="https://pandao.github.io/editor.md/">Editor.md</a>
-    </div>
+<div class="gallery">
+  <figure class="g-item">
+    <img src="/images/11.jpg" alt="冬日白兔 · 雪景" loading="lazy">
+    <figcaption>冬日白兔 · 雪景</figcaption>
+  </figure>
+  <figure class="g-item">
+    <img src="/images/cube/front.jpg" alt="冬日白兔 · 红色耳罩" loading="lazy">
+    <figcaption>冬日白兔 · 红色耳罩</figcaption>
+  </figure>
+  <figure class="g-item">
+    <img src="/images/cube/back.jpg" alt="冬日白兔 · 魔法棒" loading="lazy">
+    <figcaption>冬日白兔 · 魔法棒</figcaption>
+  </figure>
+  <figure class="g-item">
+    <img src="/images/cube/left.jpg" alt="冬日白兔 · 侧影" loading="lazy">
+    <figcaption>冬日白兔 · 侧影</figcaption>
+  </figure>
+  <figure class="g-item">
+    <img src="/images/cube/right.jpg" alt="冬日白兔 · 回眸" loading="lazy">
+    <figcaption>冬日白兔 · 回眸</figcaption>
+  </figure>
+  <figure class="g-item">
+    <img src="/images/cube/top.jpg" alt="冬日白兔 · 仰望" loading="lazy">
+    <figcaption>冬日白兔 · 仰望</figcaption>
+  </figure>
+  <figure class="g-item">
+    <img src="/images/cube/bottom.jpg" alt="冬日白兔 · 蹲坐" loading="lazy">
+    <figcaption>冬日白兔 · 蹲坐</figcaption>
+  </figure>
+  <figure class="g-item">
+    <img src="/images/0.png" alt="星空少女" loading="lazy">
+    <figcaption>星空少女</figcaption>
+  </figure>
+  <figure class="g-item">
+    <img src="/images/blog.jpg" alt="博客图标" loading="lazy">
+    <figcaption>博客图标</figcaption>
+  </figure>
+  <figure class="g-item">
+    <img src="/images/404.jpg" alt="GitHub 章鱼猫" loading="lazy">
+    <figcaption>GitHub 章鱼猫</figcaption>
+  </figure>
 </div>
+
+<style>
+  .gallery-note {
+    max-width: 760px;
+    margin: 0 auto 28px;
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--ink-3, #8a93a3);
+    letter-spacing: .02em;
+  }
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  .g-item {
+    margin: 0;
+    background: var(--card, #fffdf6);
+    border: 1px solid var(--line, #e2ddcf);
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow: var(--shadow, 0 1px 2px rgba(31, 39, 51, .05));
+    transition: transform .25s ease, box-shadow .25s ease;
+  }
+  .g-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(31, 39, 51, .12);
+  }
+  .g-item img {
+    display: block;
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    background: #f6f3ec;
+  }
+  .g-item figcaption {
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--ink-2, #5a6578);
+    letter-spacing: .03em;
+    border-top: 1px solid var(--line, #e2ddcf);
+  }
+  @media (max-width: 860px) {
+    .gallery { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .g-item img { height: 190px; }
+  }
+  @media (max-width: 480px) {
+    .gallery { grid-template-columns: 1fr; }
+  }
+</style>
