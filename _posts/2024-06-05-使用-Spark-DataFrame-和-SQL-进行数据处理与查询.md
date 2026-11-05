@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "使用 Spark DataFrame 和 SQL 进行数据处理与查询"
-date: 2024-06-05 00:00:00 +0800
+date: 2024-06-05
 categories: [实训]
 tags: [Spark, Hive]
 ---
