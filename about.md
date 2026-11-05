@@ -5,13 +5,11 @@ permalink: /about/
 ---
 
 ## 关于我
-你好，我是goldstine。
+你好，我是慢巡。
 
-初出茅庐的programmer、[知乎](https://www.zhihu.com/people/goldstine)潜水。
+初出茅庐的 programmer、知乎潜水。
 
-[个人技术公众号](https://mp.weixin.qq.com/s?__biz=MzkwODI4ODQ0OA==&mid=2247484023&idx=1&sn=ac0cddc56b4cc939777e99a9e1dcc3dc&chksm=c0cd0ad8f7ba83cea1d6187a72b9bececb81be3349011cf621510ab7c5414549d1df2f853b61&token=2017477247&lang=zh_CN#rd)分享编程学习路线、编程学习资源，记录技术成长，欢迎扫码添加：
-
-![公众号二维码](https://cdn.jsdelivr.net/gh/goldstine/goldstine.github.io/images/weixin.jpg)
+[个人技术公众号](https://mp.weixin.qq.com/s?__biz=MzkwODI4ODQ0OA==&mid=2247484023&idx=1&sn=ac0cddc56b4cc939777e99a9e1dcc3dc&chksm=c0cd0ad8f7ba83cea1d6187a72b9bececb81be3349011cf621510ab7c5414549d1df2f853b61&token=2017477247&lang=zh_CN#rd)分享编程学习路线、编程学习资源，记录技术成长。
 
 ```
 梦后楼台高锁，酒醒帘幕低垂
