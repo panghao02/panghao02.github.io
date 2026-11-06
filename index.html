@@ -381,12 +381,62 @@
     </div>
     <p class="copy">{{ site.footer-text | default: "Copyright © 慢巡的博客" }}</p>
     <div class="stat">
-      <span id="busuanzi_container_site_pv">浏览 <span id="busuanzi_value_site_pv"></span></span>
-      <span style="margin:0 12px;opacity:.4">·</span>
-      <span id="busuanzi_container_site_uv">访客 <span id="busuanzi_value_site_uv"></span></span>
+      <button id="stat_toggle" type="button" title="查看浏览与访客统计">浏览 <span id="busuanzi_value_site_pv">—</span><span class="stat-sep">·</span>访客 <span id="busuanzi_value_site_uv">—</span><span class="stat-more">查看详情</span></button>
     </div>
   </div>
 </footer>
+
+<div id="stat_panel" class="stat-panel" hidden>
+  <div class="stat-panel-box" role="dialog" aria-modal="true" aria-label="访问统计">
+    <div class="stat-panel-head">
+      <span class="stat-panel-title">访问统计</span>
+      <button id="stat_close" type="button" aria-label="关闭">×</button>
+    </div>
+    <div class="stat-panel-grid">
+      <div><b id="p_pv">—</b><small>全站浏览</small></div>
+      <div><b id="p_uv">—</b><small>全站访客</small></div>
+      <div><b id="p_today">—</b><small>今日我的访问</small></div>
+      <div><b id="p_total">—</b><small>本机累计</small></div>
+    </div>
+    <p class="stat-panel-hint">全站数字来自站点访问统计；下面是这台浏览器上的访问记录 —— 仅你自己可见，静态站点没有后端。</p>
+    <ul id="p_log" class="stat-panel-log"><li class="empty">正在读取…</li></ul>
+  </div>
+</div>
+
+<style>
+  .stat button{background:none;border:0;color:inherit;font:inherit;letter-spacing:inherit;cursor:pointer;padding:0;}
+  .stat button:hover{color:rgba(246,243,236,.9);}
+  .stat .stat-sep{margin:0 10px;opacity:.45;}
+  .stat .stat-more{display:inline-block;margin-left:10px;color:var(--amber);border-bottom:1px dashed rgba(217,164,65,.7);font-size:12px;}
+  .stat-panel{position:fixed;inset:0;z-index:60;background:rgba(20,26,36,.55);display:flex;align-items:center;justify-content:center;padding:20px;}
+  .stat-panel[hidden]{display:none;}
+  .stat-panel-box{
+    box-sizing:border-box;width:100%;max-width:520px;max-height:80vh;overflow:auto;
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px 20px;box-shadow:var(--shadow-lg);text-align:left;color:var(--ink);
+  }
+  .stat-panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .stat-panel-title{font-family:var(--serif);font-size:20px;font-weight:700;color:var(--blue);letter-spacing:2px;}
+  .stat-panel-head button{background:none;border:0;font-size:22px;line-height:1;color:var(--ink-3);cursor:pointer;padding:2px 6px;}
+  .stat-panel-head button:hover{color:var(--red);}
+  .stat-panel-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px;}
+  .stat-panel-grid div{background:var(--paper);border:1px solid var(--line);border-top:3px solid var(--amber);border-radius:8px;padding:12px 14px;}
+  .stat-panel-grid b{display:block;font-family:var(--serif);font-size:26px;color:var(--blue);font-variant-numeric:tabular-nums;line-height:1.3;}
+  .stat-panel-grid small{font-size:12px;color:var(--ink-3);letter-spacing:.05em;}
+  .stat-panel-hint{font-size:12.5px;line-height:1.7;color:var(--ink-3);margin:4px 0 12px;}
+  .stat-panel-log{list-style:none;margin:0;padding:0;border-top:1px solid var(--line);}
+  .stat-panel-log li{display:flex;align-items:baseline;gap:12px;padding:9px 4px;border-bottom:1px dashed var(--line);font-size:13px;}
+  .stat-panel-log .tm{flex:none;color:var(--amber);font-family:Consolas,Menlo,monospace;font-size:12px;font-variant-numeric:tabular-nums;}
+  .stat-panel-log .pp{color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .stat-panel-log .empty{color:var(--ink-3);font-style:italic;border-bottom:0;}
+  @media (max-width:520px){
+    .stat-panel{padding:14px;}
+    .stat-panel-grid{grid-template-columns:repeat(2,1fr);gap:8px;}
+    .stat-panel-grid b{font-size:20px;}
+    .stat-panel-box{padding:16px 16px 14px;}
+  }
+</style>
+
 
 <script>
   var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1});
@@ -406,5 +456,67 @@
   });
 </script>
 <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script>
+  /* 本机访问记录 + 页脚统计弹层 */
+  (function () {
+    var KEY = 'manxun_visit_log_v1';
+    try {
+      var log0 = JSON.parse(localStorage.getItem(KEY) || '[]');
+      var now = new Date();
+      var dstr = now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2);
+      var tstr = ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
+      var rec = { p: location.pathname, n: document.title, d: dstr, t: tstr, at: now.getTime() };
+      var dup = false;
+      for (var i = 0; i < log0.length; i++) {
+        if (log0[i].p === rec.p && Math.abs(now.getTime() - log0[i].at) < 600000) { dup = true; break; }
+      }
+      if (!dup) {
+        log0.unshift(rec);
+        if (log0.length > 100) log0.length = 100;
+        localStorage.setItem(KEY, JSON.stringify(log0));
+      }
+    } catch (e) {}
+
+    var panel = document.getElementById('stat_panel');
+    var toggle = document.getElementById('stat_toggle');
+    var closer = document.getElementById('stat_close');
+    if (!panel || !toggle) return;
+
+    function openPanel() {
+      var pvEl = document.getElementById('busuanzi_value_site_pv');
+      var uvEl = document.getElementById('busuanzi_value_site_uv');
+      document.getElementById('p_pv').textContent = pvEl ? (pvEl.textContent || '—') : '—';
+      document.getElementById('p_uv').textContent = uvEl ? (uvEl.textContent || '—') : '—';
+      var log = [];
+      try { log = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) {}
+      var now = new Date();
+      var td = now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2);
+      var cnt = 0;
+      log.forEach(function (r) { if (r.d === td) cnt++; });
+      document.getElementById('p_today').textContent = cnt;
+      document.getElementById('p_total').textContent = log.length;
+      var ul = document.getElementById('p_log');
+      ul.innerHTML = '';
+      if (!log.length) {
+        ul.innerHTML = '<li class="empty">还没有记录。从这次访问开始，每次打开页面都会记一条。</li>';
+      } else {
+        log.slice(0, 20).forEach(function (r) {
+          var li = document.createElement('li');
+          var tm = document.createElement('span'); tm.className = 'tm'; tm.textContent = r.d + ' ' + r.t;
+          var pp = document.createElement('span'); pp.className = 'pp'; pp.textContent = (r.n || '') + ' · ' + r.p;
+          li.appendChild(tm); li.appendChild(pp);
+          ul.appendChild(li);
+        });
+      }
+      panel.hidden = false;
+      document.body.style.overflow = 'hidden';
+    }
+    function closePanel() { panel.hidden = true; document.body.style.overflow = ''; }
+    toggle.addEventListener('click', openPanel);
+    if (closer) closer.addEventListener('click', closePanel);
+    panel.addEventListener('click', function (e) { if (e.target === panel) closePanel(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closePanel(); });
+  })();
+</script>
 </body>
 </html>
