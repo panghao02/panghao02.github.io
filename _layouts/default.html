@@ -73,7 +73,7 @@
           .stat-panel{position:fixed;inset:0;z-index:60;background:rgba(20,26,36,.55);display:flex;align-items:center;justify-content:center;padding:20px;}
           .stat-panel[hidden]{display:none;}
           .stat-panel-box{
-            width:100%;max-width:520px;max-height:80vh;overflow:auto;
+            box-sizing:border-box;width:100%;max-width:520px;max-height:80vh;overflow:auto;
             background:var(--card);border:1px solid var(--line);border-radius:14px;
             padding:22px 24px 20px;box-shadow:var(--shadow-lg);text-align:left;color:var(--ink);
           }
@@ -92,6 +92,7 @@
           .stat-panel-log .pp{color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
           .stat-panel-log .empty{color:var(--ink-3);font-style:italic;border-bottom:0;}
           @media (max-width:520px){
+            .stat-panel{padding:14px;}
             .stat-panel-grid{grid-template-columns:repeat(2,1fr);gap:8px;}
             .stat-panel-grid b{font-size:20px;}
             .stat-panel-box{padding:16px 16px 14px;}
