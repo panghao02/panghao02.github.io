@@ -226,4 +226,26 @@
       .page,.post{animation:none;}
     }
   </style>
+  <script>
+    /* 本机访问记录：写入 localStorage，供 /stats/ 统计页展示（仅存于你自己的浏览器） */
+    (function () {
+      try {
+        var KEY = 'manxun_visit_log_v1';
+        var log = JSON.parse(localStorage.getItem(KEY) || '[]');
+        var now = new Date();
+        var d = now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2);
+        var t = ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
+        var rec = { p: location.pathname, n: document.title, d: d, t: t, at: now.getTime() };
+        var dup = false;
+        for (var i = 0; i < log.length; i++) {
+          if (log[i].p === rec.p && Math.abs(now.getTime() - log[i].at) < 10 * 60 * 1000) { dup = true; break; }
+        }
+        if (!dup) {
+          log.unshift(rec);
+          if (log.length > 100) log.length = 100;
+          localStorage.setItem(KEY, JSON.stringify(log));
+        }
+      } catch (e) {}
+    })();
+  </script>
 </head>
